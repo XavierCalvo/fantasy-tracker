@@ -416,7 +416,7 @@ Save
 The testing strategy is defined in:
 
 ```text id="v4yy0e"
-docs/06-testing-strategy.md
+docs/07-testing-strategy.md
 ```
 
 ---
@@ -474,22 +474,22 @@ Authentication is not part of the initial MVP, but this must be reconsidered bef
 
 | Area                     | Status    |
 | ------------------------ | --------- |
-| Angular application      | ⚪ BACKLOG |
-| TypeScript configuration | ⚪ BACKLOG |
-| Routing                  | ⚪ BACKLOG |
-| PWA                      | ⚪ BACKLOG |
-| Responsive layout        | ⚪ BACKLOG |
-| Player list              | ⚪ BACKLOG |
-| Player detail            | ⚪ BACKLOG |
-| Price history            | ⚪ BACKLOG |
-| Tracking UI              | ⚪ BACKLOG |
-| API services             | ⚪ BACKLOG |
-| Frontend tests           | ⚪ BACKLOG |
+| Angular application      | 🟢 DONE   |
+| TypeScript configuration | 🟢 DONE   |
+| Routing                  | 🟢 DONE   |
+| PWA                      | 🟢 DONE   |
+| Responsive layout        | 🟡 IN PROGRESS |
+| Player list              | 🟢 DONE   |
+| Player detail            | 🟢 DONE   |
+| Price history            | 🟢 DONE   |
+| Tracking UI              | 🟢 DONE   |
+| API services             | 🟢 DONE   |
+| Frontend tests           | 🟢 DONE   |
 | E2E tests                | ⚪ BACKLOG |
 | Accessibility            | ⚪ BACKLOG |
 | Analytics UI             | ⚪ BACKLOG |
 
-At the moment, no significant frontend implementation has been completed. This document therefore describes the **target frontend architecture and behaviour**, not an already implemented application.
+Phase 2 core functionality is implemented: the Angular workspace (standalone components, Vitest, Angular Material, PWA/service worker, dev-server proxy, Docker/nginx deployment), the `PlayerApi`/`PlayerPriceApi`/`TrackedPlayerApi` services, the player list/detail screens, price history and the tracking form (status, clause, clause release date, notes) all exist and are covered by unit tests. Remaining work: finish responsive/mobile layout polish, add E2E tests and accessibility review.
 
 ---
 

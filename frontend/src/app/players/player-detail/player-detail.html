@@ -1,0 +1,109 @@
+<a routerLink="/players" class="player-detail__back">
+  <mat-icon>arrow_back</mat-icon>
+  Volver a jugadores
+</a>
+
+@if (loading()) {
+  <app-status-message mode="loading" message="Cargando jugador..."></app-status-message>
+} @else if (error() || !player()) {
+  <app-status-message
+    mode="error"
+    message="No se ha podido cargar la información del jugador."
+  ></app-status-message>
+} @else {
+  <mat-card class="player-detail__card">
+    <mat-card-header>
+      <mat-card-title>{{ player()!.name }}</mat-card-title>
+      <mat-card-subtitle>{{ player()!.team }} · {{ player()!.position }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      @if (latestPrice(); as price) {
+        <p class="player-detail__price">
+          {{ price.price | number: '1.0-0' }} €
+          @if (price.trendType) {
+            <span class="player-detail__trend">{{ trendLabels[price.trendType] }}</span>
+          }
+        </p>
+      } @else {
+        <p class="player-detail__price player-detail__price--empty">Sin precio registrado todavía.</p>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="player-detail__card">
+    <mat-card-header>
+      <mat-card-title>Historial de precios</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @if (prices().length === 0) {
+        <p>No hay observaciones de precio registradas.</p>
+      } @else {
+        <mat-list>
+          @for (price of prices(); track price.id) {
+            <mat-list-item>
+              <span matListItemTitle>{{ price.price | number: '1.0-0' }} €</span>
+              <span matListItemLine>{{ price.capturedAt | date: 'short' }}</span>
+            </mat-list-item>
+          }
+        </mat-list>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="player-detail__card">
+    <mat-card-header>
+      <mat-card-title>Seguimiento personal</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="player-detail__tracking-form">
+      <mat-form-field appearance="outline">
+        <mat-label>Estado</mat-label>
+        <mat-select [ngModel]="editStatus()" (ngModelChange)="editStatus.set($event)">
+          @for (status of statusOptions; track status) {
+            <mat-option [value]="status">{{ statusLabels[status] }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Cláusula (€)</mat-label>
+        <input
+          matInput
+          type="number"
+          min="0"
+          [ngModel]="editClause()"
+          (ngModelChange)="editClause.set($event)"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Fecha liberación cláusula</mat-label>
+        <input
+          matInput
+          [matDatepicker]="clauseDatePicker"
+          [ngModel]="editClauseReleaseDate()"
+          (ngModelChange)="editClauseReleaseDate.set($event)"
+        />
+        <mat-datepicker-toggle matSuffix [for]="clauseDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #clauseDatePicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Notas</mat-label>
+        <textarea
+          matInput
+          rows="3"
+          [ngModel]="editNotes()"
+          (ngModelChange)="editNotes.set($event)"
+        ></textarea>
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" [disabled]="trackingSaving()" (click)="saveTracking()">
+        @if (trackingSaving()) {
+          Guardando...
+        } @else {
+          Guardar seguimiento
+        }
+      </button>
+    </mat-card-content>
+  </mat-card>
+}

@@ -100,6 +100,8 @@ All exit criteria are met: Player/PlayerPrice/TrackedPlayer REST endpoints exist
 
 # Phase 2 — Frontend MVP
 
+**Status:** 🟡 IN PROGRESS
+
 **Objective:** Build the first usable mobile application.
 
 ### Main areas
@@ -138,6 +140,8 @@ Player detail
 ### Exit criteria
 
 The complete MVP can be used from a mobile browser without direct access to the backend or database.
+
+The Angular workspace, PWA configuration, routing, player list/detail, price history and tracking management (status, clause, clause release date, notes) are implemented and covered by unit tests. See `docs/05-frontend.md` and `docs/04-backend.md` (FT-040 to FT-066) for details. Remaining work: polish the responsive/mobile layout further, verify the Docker Compose stack end-to-end, and add frontend E2E tests.
 
 ---
 
@@ -263,16 +267,16 @@ This phase is intentionally open-ended and should only be prioritised once the p
 
 # Current Position
 
-Updated after completing the Backend MVP:
+Updated after starting the Frontend MVP:
 
 ```text
 Phase 0  ████████████████████  Foundation
 Phase 1  ████████████████████  Backend MVP
-Phase 2  ░░░░░░░░░░░░░░░░░░░  Frontend MVP
+Phase 2  ███████████████░░░░  Frontend MVP
 Phase 3  ░░░░░░░░░░░░░░░░░░░  Data Acquisition
 Phase 4  ░░░░░░░░░░░░░░░░░░░  Analysis
 Phase 5  ░░░░░░░░░░░░░░░░░░░  AWS
 Phase 6  ░░░░░░░░░░░░░░░░░░░  Advanced
 ```
 
-Phase 0 and Phase 1 are complete. The immediate priority is to start **Phase 2 (Frontend MVP)**, building the Angular application against the now-stable backend API.
+Phase 0 and Phase 1 are complete. Phase 2 (Frontend MVP) is now in progress: the Angular application, player list/detail and tracking management are implemented; remaining work covers mobile UX polish, an end-to-end Docker Compose verification and E2E tests.

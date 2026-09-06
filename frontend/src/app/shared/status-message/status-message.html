@@ -1,0 +1,10 @@
+@if (mode() === 'loading') {
+  <div class="status-message">
+    <mat-spinner diameter="32"></mat-spinner>
+    <span>{{ message() }}</span>
+  </div>
+} @else {
+  <div class="status-message" [class.status-message--error]="mode() === 'error'">
+    {{ message() }}
+  </div>
+}

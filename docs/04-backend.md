@@ -51,9 +51,9 @@ Tasks should be updated as development progresses.
 | FT-014 | 🟢 DONE        | P0       | Implement player price trend enum |
 | FT-015 | 🟢 DONE        | P0       | Implement tracking status enum    |
 | FT-016 | 🟢 DONE        | P1       | Create backend Dockerfile         |
-| FT-017 | 🟡 IN PROGRESS | P0       | Validate GitHub Actions CI        |
-| FT-018 | ⚪ BACKLOG      | P0       | Add backend automated tests       |
-| FT-019 | 🟡 IN PROGRESS | P1       | Complete project documentation    |
+| FT-017 | 🟢 DONE        | P0       | Validate GitHub Actions CI        |
+| FT-018 | 🟢 DONE        | P0       | Add backend automated tests       |
+| FT-019 | 🟢 DONE        | P1       | Complete project documentation    |
 
 ### Phase 0 acceptance criteria
 
@@ -108,40 +108,42 @@ The backend must expose enough functionality for the frontend to perform the com
 
 | ID     | Status    | Priority | Task                            |
 | ------ | --------- | -------- | ------------------------------- |
-| FT-040 | ⚪ BACKLOG | P0       | Create Angular application      |
-| FT-041 | ⚪ BACKLOG | P0       | Configure TypeScript            |
-| FT-042 | ⚪ BACKLOG | P0       | Configure Angular routing       |
-| FT-043 | ⚪ BACKLOG | P0       | Configure PWA                   |
-| FT-044 | ⚪ BACKLOG | P1       | Define responsive/mobile layout |
-| FT-045 | ⚪ BACKLOG | P1       | Define common UI components     |
+| FT-040 | 🟢 DONE   | P0       | Create Angular application      |
+| FT-041 | 🟢 DONE   | P0       | Configure TypeScript            |
+| FT-042 | 🟢 DONE   | P0       | Configure Angular routing       |
+| FT-043 | 🟢 DONE   | P0       | Configure PWA                   |
+| FT-044 | 🟡 IN PROGRESS | P1  | Define responsive/mobile layout |
+| FT-045 | 🟢 DONE   | P1       | Define common UI components     |
 
 ## Player experience
 
 | ID     | Status    | Priority | Task                         |
-| ------ | --------- | -------- | ---------------------------- |
-| FT-050 | ⚪ BACKLOG | P0       | Create player API service    |
-| FT-051 | ⚪ BACKLOG | P0       | Create player list           |
-| FT-052 | ⚪ BACKLOG | P0       | Create player detail         |
-| FT-053 | ⚪ BACKLOG | P0       | Display current price        |
-| FT-054 | ⚪ BACKLOG | P0       | Display current trend        |
-| FT-055 | ⚪ BACKLOG | P1       | Display price history        |
-| FT-056 | ⚪ BACKLOG | P1       | Display player team/position |
+| ------ | --------- | -------- | ----------------------------- |
+| FT-050 | 🟢 DONE   | P0       | Create player API service    |
+| FT-051 | 🟢 DONE   | P0       | Create player list           |
+| FT-052 | 🟢 DONE   | P0       | Create player detail         |
+| FT-053 | 🟢 DONE   | P0       | Display current price        |
+| FT-054 | 🟢 DONE   | P0       | Display current trend        |
+| FT-055 | 🟢 DONE   | P1       | Display price history        |
+| FT-056 | 🟢 DONE   | P1       | Display player team/position |
 
 ## Tracking experience
 
 | ID     | Status    | Priority | Task                        |
-| ------ | --------- | -------- | --------------------------- |
-| FT-060 | ⚪ BACKLOG | P0       | Create tracking API service |
-| FT-061 | ⚪ BACKLOG | P0       | Display tracking status     |
-| FT-062 | ⚪ BACKLOG | P0       | Update tracking status      |
-| FT-063 | ⚪ BACKLOG | P0       | Store release clause        |
-| FT-064 | ⚪ BACKLOG | P1       | Store clause release date   |
-| FT-065 | ⚪ BACKLOG | P1       | Store player notes          |
-| FT-066 | ⚪ BACKLOG | P1       | Create tracked-player view  |
+| ------ | --------- | -------- | ---------------------------- |
+| FT-060 | 🟢 DONE   | P0       | Create tracking API service |
+| FT-061 | 🟢 DONE   | P0       | Display tracking status     |
+| FT-062 | 🟢 DONE   | P0       | Update tracking status      |
+| FT-063 | 🟢 DONE   | P0       | Store release clause        |
+| FT-064 | 🟢 DONE   | P1       | Store clause release date   |
+| FT-065 | 🟢 DONE   | P1       | Store player notes          |
+| FT-066 | 🟢 DONE   | P1       | Create tracked-player view  |
 
 ### Phase 2 acceptance criteria
 
 A complete player can be viewed and managed from a mobile browser, including market information and personal tracking information.
+
+All acceptance criteria are met for the core flow: `PlayerApi`/`PlayerPriceApi`/`TrackedPlayerApi` cover the REST contract, `PlayerList`/`PlayerDetail` render players, price history and a tracking form (status, clause, clause release date, notes), and a shared `StatusMessage` component provides consistent loading/error/empty states. Unit tests (Vitest) cover all services and components. Remaining polish items: richer mobile navigation and an end-to-end verification of the Docker Compose stack.
 
 ---
 
@@ -218,12 +220,12 @@ Scraping should only be implemented after the external data contract and acquisi
 
 The recommended execution order from the current state is:
 
-1. **FT-017 — Validate GitHub Actions CI**
-2. **FT-018 — Add backend automated tests**
-3. **FT-029 — Define API response conventions**
-4. **FT-040 — Create Angular application**
+1. **FT-044 — Finish responsive/mobile layout polish**
+2. Verify the Docker Compose stack end-to-end (backend + frontend + db)
+3. Add frontend E2E tests for the core player/tracking journey
+4. **FT-070 — Define external player data contract** (Phase 3 kickoff, once Phase 2 is closed)
 
-The project should remain focused on the Backend MVP until the API is sufficiently stable to support the frontend.
+Phase 2 (Frontend MVP) core functionality is implemented; remaining work is UX polish and end-to-end verification before moving to Phase 3 (Data Acquisition).
 
 ---
 
