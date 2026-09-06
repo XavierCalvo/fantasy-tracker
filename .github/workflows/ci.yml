@@ -39,27 +39,44 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Check if frontend exists
+      - name: Check if frontend exists and is not placeholder
+        id: check-frontend
         run: |
           if [ ! -f frontend/package.json ]; then
-            echo "No frontend detected (frontend/package.json missing). Skipping frontend job."
+            echo "frontend_present=false" >> $GITHUB_OUTPUT
+            echo "No frontend detected (frontend/package.json missing)."
             exit 0
           fi
+          # Detect simple placeholder: search for our placeholder marker or absence of angular.json
+          if grep -q "No frontend yet" frontend/package.json || [ ! -f frontend/angular.json ]; then
+            echo "frontend_present=false" >> $GITHUB_OUTPUT
+            echo "Frontend appears to be a placeholder or angular.json missing. Skipping frontend job."
+            exit 0
+          fi
+          echo "frontend_present=true" >> $GITHUB_OUTPUT
 
       - name: Set up Node.js
+        if: steps.check-frontend.outputs.frontend_present == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-          cache: 'npm'
 
       - name: Install frontend dependencies
+        if: steps.check-frontend.outputs.frontend_present == 'true'
         working-directory: frontend
-        run: npm install
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
 
       - name: Run frontend tests
+        if: steps.check-frontend.outputs.frontend_present == 'true'
         working-directory: frontend
         run: npm test --if-present
 
       - name: Build frontend
+        if: steps.check-frontend.outputs.frontend_present == 'true'
         working-directory: frontend
         run: npm run build --if-present
