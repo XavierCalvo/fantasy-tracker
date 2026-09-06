@@ -4,7 +4,7 @@ CREATE TABLE player (
   team VARCHAR(255),
   position VARCHAR(50),
   external_id VARCHAR(100),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   CONSTRAINT uk_player_external_id UNIQUE (external_id)
 );
 
@@ -38,8 +38,8 @@ CREATE TABLE tracked_player (
   clause NUMERIC(15,0),
   clause_release_date DATE,
   notes TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   CONSTRAINT ck_tracked_player_status CHECK (status IN ('WATCHING', 'OWNED', 'DISCARDED'))
 );
 
