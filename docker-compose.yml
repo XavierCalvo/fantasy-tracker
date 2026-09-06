@@ -1,7 +1,9 @@
 version: '3.8'
+
 services:
   db:
-    image: postgres:15
+    image: postgres:15-alpine
+    container_name: fantasy-tracker-db
     environment:
       POSTGRES_DB: fantasy
       POSTGRES_USER: fantasy
@@ -10,15 +12,38 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fantasy -d fantasy"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - fantasy-network
+
   backend:
-    build: ./backend
+    container_name: fantasy-tracker-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     environment:
+      DB_URL: jdbc:postgresql://db:5432/fantasy
+      DB_USER: fantasy
+      DB_PASSWORD: fantasy
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/fantasy
       SPRING_DATASOURCE_USERNAME: fantasy
       SPRING_DATASOURCE_PASSWORD: fantasy
     ports:
       - "8080:8080"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    networks:
+      - fantasy-network
+
 volumes:
   pgdata:
+
+networks:
+  fantasy-network:
+    driver: bridge
