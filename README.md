@@ -34,12 +34,24 @@ Aplicación personal para realizar seguimiento de jugadores de Fantasy: precios,
 
 ## Endpoints básicos propuestos
 
-- GET  /api/players
-- GET  /api/players/{id}
-- POST /api/players
-- GET  /api/players/{id}/prices
-- POST /api/players/{id}/prices
-- CRUD /api/tracked-players
+- GET    /api/players
+- GET    /api/players/{id}
+- POST   /api/players
+- PUT    /api/players/{id}
+- DELETE /api/players/{id}
+- GET    /api/players/{id}/prices
+- POST   /api/players/{id}/prices
+- GET    /api/players/{id}/tracking
+- POST   /api/players/{id}/tracking
+- PUT    /api/tracking/{id}
+- DELETE /api/tracking/{id}
+
+## Documentación de la API (Swagger)
+
+Con el backend en marcha (local o vía Docker), la documentación interactiva está disponible en:
+
+- Swagger UI: http://localhost:8080/swagger-ui.html
+- OpenAPI JSON: http://localhost:8080/v3/api-docs
 
 ## Roadmap
 
