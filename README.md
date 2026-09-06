@@ -20,7 +20,7 @@ Aplicación personal para realizar seguimiento de jugadores de Fantasy: precios,
    - Ejecuta: docker-compose up --build
 
 3. Ejecutar la app Spring Boot (si prefieres local sin contenedor):
-   - mvn -f backend/pom.xml spring-boot:run
+   - mvn -f backend/pom.xml spring-boot:run (i.e. mvn backend/pom.xml spring-boot:run "-Dspring-boot.run.arguments=--DB_URL=jdbc:postgresql://localhost:5432/fantasy" )
 
 4. Angular: (carpeta frontend, aún por crear)
    - npm install

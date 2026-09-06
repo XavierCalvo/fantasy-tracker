@@ -260,13 +260,14 @@ Additional quality gates may be introduced later.
 
 | Area                          | Status         |
 | ----------------------------- | -------------- |
-| Backend test framework        | 🟡 IN PROGRESS |
-| Backend unit tests            | ⚪ BACKLOG      |
-| Repository/integration tests  | ⚪ BACKLOG      |
-| REST API tests                | ⚪ BACKLOG      |
+| Backend test framework        | 🟢 DONE        |
+| Backend unit tests            | 🟢 DONE        |
+| Repository/integration tests  | 🟢 DONE        |
+| REST API tests                | 🟢 DONE        |
 | Frontend tests                | ⚪ BACKLOG      |
 | E2E tests                     | ⚪ BACKLOG      |
-| CI test execution             | 🟡 IN PROGRESS |
+| CI test execution (backend)   | 🟢 DONE        |
+| CI test execution (frontend)  | ⚪ BACKLOG      |
 | External-source test strategy | ⚪ BACKLOG      |
 
 This document defines the intended strategy. Specific tools and implementation details may evolve as the project develops.
