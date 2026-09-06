@@ -308,6 +308,29 @@ Calculate them later from historical data unless performance requirements justif
 
 ---
 
+# ADR-014 — Uniform REST API Conventions
+
+**Status:** Accepted
+
+### Context
+
+The backend needed a consistent, predictable contract across `Player`, `PlayerPrice` and `TrackedPlayer` endpoints before the frontend starts consuming the API.
+
+### Decision
+
+* Use dedicated request/response DTOs for every endpoint; never serialize JPA entities directly.
+* Apply bean validation (`jakarta.validation`) on request DTOs.
+* Centralise error translation in a single `@RestControllerAdvice` (`GlobalExceptionHandler`) returning a uniform `ApiError` body (`timestamp`, `status`, `error`, `message`, `path`, `details`).
+* Use standard HTTP status codes consistently: `200`/`201`/`204` for success, `400` for validation/malformed input, `404` for missing resources, `500` for unexpected failures.
+
+### Consequences
+
+* Frontend can rely on a single, predictable error shape across all endpoints.
+* Entity/schema changes no longer leak directly into the API contract.
+* New endpoints only need to follow the existing convention rather than invent their own.
+
+---
+
 # 3. Future Decisions
 
 Important future decisions that still require explicit evaluation include:

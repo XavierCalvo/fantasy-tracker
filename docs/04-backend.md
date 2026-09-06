@@ -79,22 +79,22 @@ Tasks should be updated as development progresses.
 | FT-023 | 🟢 DONE        | P0       | Complete Player REST API        |
 | FT-024 | 🟢 DONE        | P0       | Create PlayerPrice REST API     |
 | FT-025 | 🟢 DONE        | P0       | Create TrackedPlayer REST API   |
-| FT-026 | ⚪ BACKLOG      | P1       | Add request/response DTOs       |
-| FT-027 | ⚪ BACKLOG      | P1       | Add bean/domain validation      |
-| FT-028 | ⚪ BACKLOG      | P1       | Add global API error handling   |
-| FT-029 | ⚪ BACKLOG      | P1       | Define API response conventions |
+| FT-026 | 🟢 DONE        | P1       | Add request/response DTOs       |
+| FT-027 | 🟢 DONE        | P1       | Add bean/domain validation      |
+| FT-028 | 🟢 DONE        | P1       | Add global API error handling   |
+| FT-029 | 🟢 DONE        | P1       | Define API response conventions |
 
 ## Backend testing
 
 | ID     | Status    | Priority | Task                            |
 | ------ | --------- | -------- | ------------------------------- |
-| FT-030 | ⚪ BACKLOG | P0       | Test Player persistence         |
-| FT-031 | ⚪ BACKLOG | P0       | Test Player API                 |
-| FT-032 | ⚪ BACKLOG | P0       | Test PlayerPrice persistence    |
-| FT-033 | ⚪ BACKLOG | P0       | Test PlayerPrice API            |
-| FT-034 | ⚪ BACKLOG | P0       | Test TrackedPlayer persistence  |
-| FT-035 | ⚪ BACKLOG | P0       | Test TrackedPlayer API          |
-| FT-036 | ⚪ BACKLOG | P1       | Test validation/error scenarios |
+| FT-030 | 🟢 DONE   | P0       | Test Player persistence         |
+| FT-031 | 🟢 DONE   | P0       | Test Player API                 |
+| FT-032 | 🟢 DONE   | P0       | Test PlayerPrice persistence    |
+| FT-033 | 🟢 DONE   | P0       | Test PlayerPrice API            |
+| FT-034 | 🟢 DONE   | P0       | Test TrackedPlayer persistence  |
+| FT-035 | 🟢 DONE   | P0       | Test TrackedPlayer API          |
+| FT-036 | 🟢 DONE   | P1       | Test validation/error scenarios |
 
 ### Phase 1 acceptance criteria
 
@@ -220,11 +220,8 @@ The recommended execution order from the current state is:
 
 1. **FT-017 — Validate GitHub Actions CI**
 2. **FT-018 — Add backend automated tests**
-3. **FT-026 — Add DTOs**
-4. **FT-027 — Add validation**
-5. **FT-028 — Add global error handling**
-6. **FT-031/033/035 — Complete API test coverage**
-7. **FT-040 — Create Angular application**
+3. **FT-029 — Define API response conventions**
+4. **FT-040 — Create Angular application**
 
 The project should remain focused on the Backend MVP until the API is sufficiently stable to support the frontend.
 

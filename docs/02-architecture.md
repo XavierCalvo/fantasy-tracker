@@ -120,6 +120,34 @@ The backend provides:
 
 The backend is the main boundary between the frontend and persistent/external data.
 
+### API Conventions
+
+* Base path: all endpoints are under `/api`.
+* Resource-oriented URLs, e.g. `/api/players`, `/api/players/{id}`, `/api/players/{id}/prices`, `/api/players/{id}/tracking`, `/api/tracking/{id}`.
+* Controllers never expose JPA entities directly; every request/response uses a dedicated DTO (`com.fantasytracker.dto`).
+* Standard HTTP status codes:
+  * `200 OK` — successful `GET`/`PUT`.
+  * `201 Created` — successful `POST`.
+  * `204 No Content` — successful `DELETE`.
+  * `400 Bad Request` — validation failure or malformed JSON.
+  * `404 Not Found` — referenced resource does not exist.
+  * `500 Internal Server Error` — unexpected failure.
+* Errors are returned as a uniform `ApiError` JSON body (`com.fantasytracker.web.ApiError`):
+
+  ```json
+  {
+    "timestamp": "2026-01-01T12:00:00+01:00",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "Validation failed",
+    "path": "/api/players",
+    "details": ["name: Player name is required"]
+  }
+  ```
+
+* Bean validation (`jakarta.validation`) is applied on request DTOs; validation failures populate `details` with one `field: message` entry per violation.
+* A global `@RestControllerAdvice` (`GlobalExceptionHandler`) is the single place responsible for translating exceptions into `ApiError` responses, keeping controllers free of manual error handling.
+
 ---
 
 ## 6. Database

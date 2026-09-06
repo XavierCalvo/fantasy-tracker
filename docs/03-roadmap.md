@@ -36,7 +36,7 @@ The objective is to reach a useful product early rather than waiting until every
 | Docker Compose                | 🟢 DONE        |
 | PostgreSQL local environment  | 🟢 DONE        |
 | Spring Boot backend           | 🟢 DONE        |
-| Java 21 baseline              | 🟢 DONE        |
+| Java 21 baseline               | 🟢 DONE        |
 | Flyway integration            | 🟢 DONE        |
 | Initial database model        | 🟢 DONE        |
 | Player entity                 | 🟢 DONE        |
@@ -63,6 +63,8 @@ Phase 0 is complete when:
 ---
 
 # Phase 1 — Backend MVP
+
+**Status:** 🟢 DONE
 
 **Objective:** Provide a usable REST API for the complete initial domain.
 
@@ -91,6 +93,8 @@ The API should allow the frontend to:
 ### Exit criteria
 
 A complete API exists for the MVP domain and is covered by automated tests.
+
+All exit criteria are met: Player/PlayerPrice/TrackedPlayer REST endpoints exist, requests/responses use DTOs, bean validation is applied, errors are handled through a global `ApiError` response, and MockMvc tests cover the CRUD, not-found and validation scenarios for all three resources. See `docs/04-backend.md` (FT-020 to FT-036) and `docs/02-architecture.md` §5 for the resulting API conventions.
 
 ---
 
@@ -259,11 +263,11 @@ This phase is intentionally open-ended and should only be prioritised once the p
 
 # Current Position
 
-At the beginning of the project documentation effort, the project is approximately here:
+Updated after completing the Backend MVP:
 
 ```text
-Phase 0  █████████████████░░░  Foundation
-Phase 1  ████░░░░░░░░░░░░░░░  Backend MVP
+Phase 0  ████████████████████  Foundation
+Phase 1  ████████████████████  Backend MVP
 Phase 2  ░░░░░░░░░░░░░░░░░░░  Frontend MVP
 Phase 3  ░░░░░░░░░░░░░░░░░░░  Data Acquisition
 Phase 4  ░░░░░░░░░░░░░░░░░░░  Analysis
@@ -271,4 +275,4 @@ Phase 5  ░░░░░░░░░░░░░░░░░░░  AWS
 Phase 6  ░░░░░░░░░░░░░░░░░░░  Advanced
 ```
 
-The immediate priority is to finish **Phase 0** and then complete the **Backend MVP** before investing significant effort in analytics or cloud infrastructure.
+Phase 0 and Phase 1 are complete. The immediate priority is to start **Phase 2 (Frontend MVP)**, building the Angular application against the now-stable backend API.

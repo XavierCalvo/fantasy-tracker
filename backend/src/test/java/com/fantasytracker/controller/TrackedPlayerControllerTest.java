@@ -1,0 +1,105 @@
+package com.fantasytracker.controller;
+
+import com.fantasytracker.model.Player;
+import com.fantasytracker.repository.PlayerPriceRepository;
+import com.fantasytracker.repository.PlayerRepository;
+import com.fantasytracker.repository.TrackedPlayerRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class TrackedPlayerControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private PlayerRepository playerRepository;
+
+    @Autowired
+    private PlayerPriceRepository playerPriceRepository;
+
+    @Autowired
+    private TrackedPlayerRepository trackedPlayerRepository;
+
+    private Long playerId;
+
+    @BeforeEach
+    void setUp() {
+        trackedPlayerRepository.deleteAll();
+        playerPriceRepository.deleteAll();
+        playerRepository.deleteAll();
+        playerId = playerRepository.save(new Player("Player")).getId();
+    }
+
+    @Test
+    void createsAndRetrievesTracking() throws Exception {
+        mockMvc.perform(post("/api/players/" + playerId + "/tracking")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"status\":\"OWNED\",\"clause\":1000000,\"notes\":\"Watch closely\"}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value("OWNED"))
+                .andExpect(jsonPath("$.playerId").value(playerId));
+
+        mockMvc.perform(get("/api/players/" + playerId + "/tracking"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.notes").value("Watch closely"));
+    }
+
+    @Test
+    void createDefaultsStatusWhenNotProvided() throws Exception {
+        mockMvc.perform(post("/api/players/" + playerId + "/tracking")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value("WATCHING"));
+    }
+
+    @Test
+    void createReturns404WhenPlayerMissing() throws Exception {
+        mockMvc.perform(post("/api/players/999999/tracking")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void createRejectsNegativeClause() throws Exception {
+        mockMvc.perform(post("/api/players/" + playerId + "/tracking")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"clause\":-500}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void updatesAndDeletesTracking() throws Exception {
+        String response = mockMvc.perform(post("/api/players/" + playerId + "/tracking")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        Long trackingId = Long.valueOf(response.replaceAll(".*\"id\":(\\d+).*", "$1"));
+
+        mockMvc.perform(put("/api/tracking/" + trackingId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"status\":\"DISCARDED\",\"notes\":\"No longer interesting\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("DISCARDED"))
+                .andExpect(jsonPath("$.notes").value("No longer interesting"));
+
+        mockMvc.perform(delete("/api/tracking/" + trackingId))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/api/players/" + playerId + "/tracking"))
+                .andExpect(status().isNotFound());
+    }
+}
