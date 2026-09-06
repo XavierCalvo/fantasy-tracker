@@ -29,7 +29,7 @@ Aplicación personal para realizar seguimiento de jugadores de Fantasy: precios,
 ## Estructura inicial incluida en este commit
 
 - backend/: esqueleto Spring Boot con entidades, repositorios y controlador básico
-- infrastructure/flyway/: migración V1__init.sql
+- backend/src/main/resources/db/migration/V1__init.sql: migración inicial
 - docker-compose.yml: Postgres + backend (conexión por variables)
 
 ## Endpoints básicos propuestos

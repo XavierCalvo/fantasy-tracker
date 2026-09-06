@@ -3,4 +3,8 @@ package com.fantasytracker.repository;
 import com.fantasytracker.model.TrackedPlayer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface TrackedPlayerRepository extends JpaRepository<TrackedPlayer, Long> { }
+import java.util.Optional;
+
+public interface TrackedPlayerRepository extends JpaRepository<TrackedPlayer, Long> {
+    Optional<TrackedPlayer> findByPlayerId(Long playerId);
+}

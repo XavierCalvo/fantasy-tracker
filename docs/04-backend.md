@@ -76,9 +76,9 @@ Tasks should be updated as development progresses.
 | FT-020 | 🟢 DONE        | P0       | Create Player repository        |
 | FT-021 | 🟢 DONE        | P0       | Create PlayerPrice repository   |
 | FT-022 | 🟢 DONE        | P0       | Create TrackedPlayer repository |
-| FT-023 | 🟡 IN PROGRESS | P0       | Complete Player REST API        |
-| FT-024 | ⚪ BACKLOG      | P0       | Create PlayerPrice REST API     |
-| FT-025 | ⚪ BACKLOG      | P0       | Create TrackedPlayer REST API   |
+| FT-023 | 🟢 DONE        | P0       | Complete Player REST API        |
+| FT-024 | 🟢 DONE        | P0       | Create PlayerPrice REST API     |
+| FT-025 | 🟢 DONE        | P0       | Create TrackedPlayer REST API   |
 | FT-026 | ⚪ BACKLOG      | P1       | Add request/response DTOs       |
 | FT-027 | ⚪ BACKLOG      | P1       | Add bean/domain validation      |
 | FT-028 | ⚪ BACKLOG      | P1       | Add global API error handling   |
@@ -220,14 +220,11 @@ The recommended execution order from the current state is:
 
 1. **FT-017 — Validate GitHub Actions CI**
 2. **FT-018 — Add backend automated tests**
-3. **FT-023 — Complete Player REST API**
-4. **FT-024 — Create PlayerPrice REST API**
-5. **FT-025 — Create TrackedPlayer REST API**
-6. **FT-026 — Add DTOs**
-7. **FT-027 — Add validation**
-8. **FT-028 — Add global error handling**
-9. **FT-031/033/035 — Complete API test coverage**
-10. **FT-040 — Create Angular application**
+3. **FT-026 — Add DTOs**
+4. **FT-027 — Add validation**
+5. **FT-028 — Add global error handling**
+6. **FT-031/033/035 — Complete API test coverage**
+7. **FT-040 — Create Angular application**
 
 The project should remain focused on the Backend MVP until the API is sufficiently stable to support the frontend.
 
