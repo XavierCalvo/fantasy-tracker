@@ -126,6 +126,8 @@ The backend must expose enough functionality for the frontend to perform the com
 | FT-054 | 🟢 DONE   | P0       | Display current trend        |
 | FT-055 | 🟢 DONE   | P1       | Display price history        |
 | FT-056 | 🟢 DONE   | P1       | Display player team/position |
+| FT-057 | 🟢 DONE   | P0       | Create player (form + `/players/new` route) |
+| FT-058 | 🟢 DONE   | P0       | Edit player (form + `/players/:id/edit` route, to fix team/position/external id changes or creation mistakes) |
 
 ## Tracking experience
 
@@ -144,7 +146,7 @@ The backend must expose enough functionality for the frontend to perform the com
 
 A complete player can be viewed and managed from a mobile browser, including market information and personal tracking information.
 
-All acceptance criteria are met for the core flow: `PlayerApi`/`PlayerPriceApi`/`TrackedPlayerApi` cover the REST contract, `PlayerList`/`PlayerDetail` render players, price history and a tracking form (status, clause, clause release date, notes), and a shared `StatusMessage` component provides consistent loading/error/empty states. Unit tests (Vitest) cover all services and components. FT-066 is implemented as a dedicated **watchlist screen** (`TrackedPlayers`, route `/tracked`) that lists every tracked player, filterable by status and sortable by clause release date, name or status; it is now the app's default landing route, since it is more actionable to the user than a bare player list. This required a small backend addition (FT-067: `GET /api/tracking`, returning tracked players joined with player name/team/position) since no endpoint previously existed to list tracked players across all players. Remaining polish items: richer mobile navigation and an end-to-end verification of the Docker Compose stack.
+All acceptance criteria are met for the core flow: `PlayerApi`/`PlayerPriceApi`/`TrackedPlayerApi` cover the REST contract, `PlayerList`/`PlayerDetail` render players, price history and a tracking form (status, clause, clause release date, notes), and a shared `StatusMessage` component provides consistent loading/error/empty states. Unit tests (Vitest) cover all services and components. FT-066 is implemented as a dedicated **watchlist screen** (`TrackedPlayers`, route `/tracked`) that lists every tracked player, filterable by status and sortable by clause release date, name or status; it is now the app's default landing route, since it is more actionable to the user than a bare player list. This required a small backend addition (FT-067: `GET /api/tracking`, returning tracked players joined with player name/team/position) since no endpoint previously existed to list tracked players across all players. FT-057/FT-058 add a shared `PlayerForm` component (create at `/players/new`, edit at `/players/:id/edit`) so players can be registered and corrected (team, position, Futbolfantasy external id) entirely from the UI — the backend `POST`/`PUT /api/players` endpoints already existed from Phase 1 but had no frontend view. Remaining polish items: richer mobile navigation and an end-to-end verification of the Docker Compose stack.
 
 ---
 

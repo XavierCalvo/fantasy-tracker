@@ -98,9 +98,20 @@ The structure should evolve if the actual application demonstrates a better orga
 
 The frontend is expected to contain the following functional areas.
 
-## 5.1 Players
+## 5.1 Watchlist (Tracked Players)
 
-The player area is the main entry point.
+The watchlist is the **main entry point** of the application (default route `/tracked`). A bare player catalog is not actionable on its own — what the user actually needs day to day is the list of players they are already tracking.
+
+It should allow the user to:
+
+* List every tracked player, enriched with the underlying player's name/team/position.
+* Filter by tracking status (`WATCHING`, `OWNED`, `DISCARDED`, or all).
+* Sort by clause release date, player name or status, in either direction.
+* Open a tracked player's detail (which reuses the Player Detail screen).
+
+## 5.2 Players
+
+The player catalog is a secondary area, reachable from the top navigation. It backs the watchlist (a player must exist before it can be tracked) and lets the user manage the player database directly.
 
 It should allow the user to:
 
@@ -109,10 +120,12 @@ It should allow the user to:
 * Filter players.
 * Open player details.
 * Review current market information.
+* Create a new player.
+* Edit an existing player (e.g. team/position changes after a transfer, correcting the Futbolfantasy external id, or fixing a mistake made at creation time).
 
 ---
 
-## 5.2 Player Detail
+## 5.3 Player Detail
 
 The player detail screen should provide a consolidated view of the player.
 
@@ -134,11 +147,33 @@ Player
       └── Notes
 ```
 
+The screen also links to the player edit form (`/players/:id/edit`).
+
 The exact visual layout is TBD.
 
 ---
 
-## 5.3 Price History
+## 5.4 Player Creation & Editing
+
+A dedicated form (shared between creation and editing) lets the user register new players and correct existing ones.
+
+Fields:
+
+* Name (required).
+* Team.
+* Position.
+* Futbolfantasy external id.
+
+Routes:
+
+* `/players/new` — create mode, empty form.
+* `/players/:id/edit` — edit mode, form pre-filled from the existing player.
+
+On save, the user is redirected to the corresponding Player Detail screen.
+
+---
+
+## 5.5 Price History
 
 The player detail should eventually display historical price evolution.
 
@@ -157,7 +192,7 @@ Derived metrics such as 24h, 3-day and 7-day changes will be added in a later ph
 
 ---
 
-## 5.4 Tracking
+## 5.6 Tracking
 
 The user should be able to manage the personal state of a player.
 
@@ -180,32 +215,47 @@ The interface should allow:
 
 # 6. Navigation
 
-The initial navigation is expected to be simple.
-
-A possible structure is:
+The implemented navigation tree is:
 
 ```text id="7g2a5q"
-                    ┌──────────────┐
-                    │    Players   │
-                    └──────┬───────┘
-                           │
-                    ┌──────▼───────┐
-                    │ Player Detail│
-                    └──────┬───────┘
-                           │
-              ┌────────────┼────────────┐
-              ▼            ▼            ▼
-           Market       Tracking      Analysis
+                    ┌───────────────────────┐
+                    │  Tracked Players (/)   │  ← default route, main entry point
+                    │  filter by status,     │
+                    │  sort by clause date    │
+                    └───────────┬────────────┘
+                                │ open a row
+                                ▼
+                    ┌───────────────────────┐
+              ┌────►│    Player Detail       │◄────┐
+              │     │ price · trend · history│     │
+              │     │ · tracking form         │     │
+              │     └───────────┬────────────┘     │
+              │                 │ "Editar jugador"  │
+              │                 ▼                   │
+              │     ┌───────────────────────┐       │
+              │     │  Player Form (edit)    │       │
+              │     │  /players/:id/edit     │       │
+              │     └───────────────────────┘       │
+              │                                      │
+    ┌─────────┴─────────┐                            │
+    │   Players (list)   │  reachable from top nav    │
+    │   search/filter    │────────────────────────────┘
+    └─────────┬──────────┘
+              │ "Nuevo jugador"
+              ▼
+    ┌───────────────────────┐
+    │  Player Form (create)  │
+    │  /players/new           │
+    └───────────────────────┘
 ```
+
+The top toolbar provides persistent links to **Seguimiento** (`/tracked`) and **Jugadores** (`/players`).
 
 A mobile navigation bar may eventually provide direct access to:
 
-* Players.
 * Watchlist.
-* Owned players.
-* Opportunities.
-
-The final navigation model will be defined during Phase 2.
+* Players.
+* Opportunities (future analysis phase).
 
 ---
 
@@ -481,6 +531,7 @@ Authentication is not part of the initial MVP, but this must be reconsidered bef
 | Responsive layout        | 🟡 IN PROGRESS |
 | Player list              | 🟢 DONE   |
 | Player detail            | 🟢 DONE   |
+| Player create/edit form  | 🟢 DONE   |
 | Price history            | 🟢 DONE   |
 | Tracking UI              | 🟢 DONE   |
 | Tracked-players watchlist | 🟢 DONE  |
@@ -490,7 +541,7 @@ Authentication is not part of the initial MVP, but this must be reconsidered bef
 | Accessibility            | ⚪ BACKLOG |
 | Analytics UI             | ⚪ BACKLOG |
 
-Phase 2 core functionality is implemented: the Angular workspace (standalone components, Vitest, Angular Material, PWA/service worker, dev-server proxy, Docker/nginx deployment), the `PlayerApi`/`PlayerPriceApi`/`TrackedPlayerApi` services, the player list/detail screens, price history and the tracking form (status, clause, clause release date, notes) all exist and are covered by unit tests. A dedicated **watchlist screen** (`TrackedPlayers`, route `/tracked`) lists every tracked player enriched with player name/team/position, filterable by status and sortable by clause release date, name or status; it is the app's default landing route. Remaining work: finish responsive/mobile layout polish, add E2E tests and accessibility review.
+Phase 2 core functionality is implemented: the Angular workspace (standalone components, Vitest, Angular Material, PWA/service worker, dev-server proxy, Docker/nginx deployment), the `PlayerApi`/`PlayerPriceApi`/`TrackedPlayerApi` services, the player list/detail screens, a shared `PlayerForm` for creating and editing players (`/players/new`, `/players/:id/edit`), price history and the tracking form (status, clause, clause release date, notes) all exist and are covered by unit tests. A dedicated **watchlist screen** (`TrackedPlayers`, route `/tracked`) lists every tracked player enriched with player name/team/position, filterable by status and sortable by clause release date, name or status; it is the app's default landing route. Remaining work: finish responsive/mobile layout polish, add E2E tests and accessibility review.
 
 ---
 

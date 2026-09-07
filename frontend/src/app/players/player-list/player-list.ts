@@ -5,6 +5,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { catchError, map, of, startWith } from 'rxjs';
 import { PlayerApi } from '../../core/services/player-api';
@@ -24,6 +25,7 @@ interface PlayerListState {
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
+    MatButtonModule,
     FormsModule,
     StatusMessage,
   ],

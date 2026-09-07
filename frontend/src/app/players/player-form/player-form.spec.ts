@@ -1,0 +1,118 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { of } from 'rxjs';
+import { PlayerForm } from './player-form';
+import { Player } from '../../core/models/player';
+
+describe('PlayerForm', () => {
+  let component: PlayerForm;
+  let fixture: ComponentFixture<PlayerForm>;
+  let httpMock: HttpTestingController;
+
+  const player: Player = {
+    id: 1,
+    name: 'Alpha Striker',
+    team: 'FC Alpha',
+    position: 'DEL',
+    externalId: 'ff-123',
+    createdAt: '2024-01-01T00:00:00Z',
+  };
+
+  async function setup(paramMap: Record<string, string>) {
+    await TestBed.configureTestingModule({
+      imports: [PlayerForm, NoopAnimationsModule],
+      providers: [
+        provideRouter([{ path: '**', children: [] }]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        {
+          provide: ActivatedRoute,
+          useValue: { paramMap: of(convertToParamMap(paramMap)) },
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(PlayerForm);
+    component = fixture.componentInstance;
+    httpMock = TestBed.inject(HttpTestingController);
+  }
+
+  it('should start empty in create mode', async () => {
+    await setup({});
+    fixture.detectChanges();
+
+    expect(component.isEditMode()).toBe(false);
+    expect(component.name()).toBe('');
+    expect(component.canSave()).toBe(false);
+  });
+
+  it('should create a new player', async () => {
+    await setup({});
+    fixture.detectChanges();
+
+    component.name.set('New Player');
+    component.team.set('FC Test');
+    component.position.set('POR');
+    expect(component.canSave()).toBe(true);
+
+    component.save();
+
+    const req = httpMock.expectOne('/api/players');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({
+      name: 'New Player',
+      team: 'FC Test',
+      position: 'POR',
+      externalId: null,
+    });
+    req.flush({ ...player, id: 2, name: 'New Player' });
+  });
+
+  it('should load an existing player in edit mode', async () => {
+    await setup({ id: '1' });
+    fixture.detectChanges();
+
+    httpMock.expectOne('/api/players/1').flush(player);
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(component.isEditMode()).toBe(true);
+    expect(component.name()).toBe('Alpha Striker');
+    expect(component.team()).toBe('FC Alpha');
+    expect(component.externalId()).toBe('ff-123');
+  });
+
+  it('should update an existing player', async () => {
+    await setup({ id: '1' });
+    fixture.detectChanges();
+
+    httpMock.expectOne('/api/players/1').flush(player);
+    await fixture.whenStable();
+
+    component.position.set('MED');
+    component.save();
+
+    const req = httpMock.expectOne('/api/players/1');
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body.position).toBe('MED');
+    req.flush({ ...player, position: 'MED' });
+  });
+
+  it('should navigate to the player detail page after saving', async () => {
+    await setup({});
+    fixture.detectChanges();
+    const router = TestBed.inject(Router);
+    const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+
+    component.name.set('New Player');
+    component.save();
+
+    const req = httpMock.expectOne('/api/players');
+    req.flush({ ...player, id: 2, name: 'New Player' });
+
+    expect(navigateSpy).toHaveBeenCalledWith(['/players', 2]);
+  });
+});

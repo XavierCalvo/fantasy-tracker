@@ -11,6 +11,14 @@ export const routes: Routes = [
     loadComponent: () => import('./players/player-list/player-list').then((m) => m.PlayerList),
   },
   {
+    path: 'players/new',
+    loadComponent: () => import('./players/player-form/player-form').then((m) => m.PlayerForm),
+  },
+  {
+    path: 'players/:id/edit',
+    loadComponent: () => import('./players/player-form/player-form').then((m) => m.PlayerForm),
+  },
+  {
     path: 'players/:id',
     loadComponent: () => import('./players/player-detail/player-detail').then((m) => m.PlayerDetail),
   },

@@ -1,14 +1,21 @@
-<mat-form-field appearance="outline" class="player-list__search">
-  <mat-label>Buscar jugador</mat-label>
-  <input
-    matInput
-    type="text"
-    placeholder="Nombre, equipo o posición"
-    [ngModel]="search()"
-    (ngModelChange)="search.set($event)"
-  />
-  <mat-icon matSuffix>search</mat-icon>
-</mat-form-field>
+<div class="player-list__header">
+  <mat-form-field appearance="outline" class="player-list__search">
+    <mat-label>Buscar jugador</mat-label>
+    <input
+      matInput
+      type="text"
+      placeholder="Nombre, equipo o posición"
+      [ngModel]="search()"
+      (ngModelChange)="search.set($event)"
+    />
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  <a mat-flat-button color="primary" routerLink="/players/new" class="player-list__new-button">
+    <mat-icon>add</mat-icon>
+    Nuevo jugador
+  </a>
+</div>
 
 @if (loading()) {
   <app-status-message mode="loading" message="Cargando jugadores..."></app-status-message>

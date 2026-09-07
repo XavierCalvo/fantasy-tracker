@@ -1,3 +1,17 @@
+.player-list__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
 .player-list__search {
-  width: 100%;
+  flex: 1 1 auto;
+  width: auto;
+}
+
+.player-list__new-button {
+  flex: 0 0 auto;
+  margin-top: 4px;
+  white-space: nowrap;
 }

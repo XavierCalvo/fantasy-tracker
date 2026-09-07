@@ -28,6 +28,12 @@
         <p class="player-detail__price player-detail__price--empty">Sin precio registrado todavía.</p>
       }
     </mat-card-content>
+    <mat-card-actions>
+      <a mat-button [routerLink]="['/players', player()!.id, 'edit']">
+        <mat-icon>edit</mat-icon>
+        Editar jugador
+      </a>
+    </mat-card-actions>
   </mat-card>
 
   <mat-card class="player-detail__card">
