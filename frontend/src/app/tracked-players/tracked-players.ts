@@ -19,12 +19,12 @@ import {
   TrackedPlayerListItem,
   TrackedPlayerStatus,
 } from '../core/models/tracked-player';
-import { PLAYER_POSITION_LABELS } from '../core/models/player-position';
+import { PLAYER_POSITION_LABELS, PLAYER_POSITIONS } from '../core/models/player-position';
 import { StatusMessage } from '../shared/status-message/status-message';
 import { isPriceStale } from '../shared/price-staleness';
 
 type StatusFilter = TrackedPlayerStatus | 'ALL';
-type SortField = 'clauseReleaseDate' | 'playerName' | 'status';
+type SortField = 'clauseReleaseDate' | 'playerName' | 'status' | 'playerPosition' | 'latestTrendAmount';
 type SortDirection = 'asc' | 'desc';
 
 @Component({
@@ -137,20 +137,19 @@ export class TrackedPlayers {
       const valueA = this.sortValue(a, field);
       const valueB = this.sortValue(b, field);
 
-      // Players without a clause release date are pushed to the end regardless of direction.
-      if (field === 'clauseReleaseDate') {
-        if (valueA === null && valueB === null) return 0;
-        if (valueA === null) return 1;
-        if (valueB === null) return -1;
-      }
+      // Players without a value for the chosen field (no clause date, no position, no price
+      // recorded yet...) are pushed to the end regardless of direction.
+      if (valueA === null && valueB === null) return 0;
+      if (valueA === null) return 1;
+      if (valueB === null) return -1;
 
-      if (valueA! < valueB!) return -1 * direction;
-      if (valueA! > valueB!) return 1 * direction;
+      if (valueA < valueB) return -1 * direction;
+      if (valueA > valueB) return 1 * direction;
       return 0;
     });
   }
 
-  private sortValue(item: TrackedPlayerListItem, field: SortField): string | null {
+  private sortValue(item: TrackedPlayerListItem, field: SortField): string | number | null {
     switch (field) {
       case 'clauseReleaseDate':
         return item.clauseReleaseDate;
@@ -158,6 +157,10 @@ export class TrackedPlayers {
         return item.playerName;
       case 'status':
         return item.status;
+      case 'playerPosition':
+        return item.playerPosition ? PLAYER_POSITIONS.indexOf(item.playerPosition) : null;
+      case 'latestTrendAmount':
+        return item.latestTrendAmount;
     }
   }
 }

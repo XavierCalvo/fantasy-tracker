@@ -174,7 +174,7 @@ FT-074 adds a `@Tag` per controller (Players, Teams, Tracking, Player Prices) an
 | FT-081 | ⚪ BACKLOG | P1       | Prevent duplicate price observations |
 | FT-082 | 🟢 DONE   | P1       | Isolate external-source integration (`com.fantasytracker.acquisition` package: `PlayerMarketDataScraper` interface, `FutbolFantasyPlayerScraper`/`FutbolFantasyPriceParser` implementation, `PlayerMarketDataException`) |
 | FT-083 | ⚪ BACKLOG | P1       | Implement scheduled acquisition      |
-| FT-084 | 🟢 DONE   | P1       | Bulk refresh endpoint (`POST /api/tracking/prices/refresh`) and "Actualizar todos" button on the watchlist screen; per-player scraping failures are reported individually and do not abort the batch |
+| FT-084 | 🟢 DONE   | P1       | Bulk refresh endpoint (`POST /api/tracking/prices/refresh`) and "Actualizar todos" button on the watchlist screen; per-player scraping failures are reported individually and do not abort the batch; discarded players are skipped (a manual per-player refresh is still always available for them) |
 
 Scraping should only be implemented after the external data contract and acquisition boundary are clearly defined.
 

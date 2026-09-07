@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -162,7 +163,7 @@ class TrackedPlayerControllerTest {
     }
 
     @Test
-    void refreshAllRefreshesEveryTrackedPlayerAndReportsPerPlayerResults() throws Exception {
+    void refreshAllRefreshesEveryActivelyTrackedPlayerAndReportsPerPlayerResults() throws Exception {
         mockMvc.perform(post("/api/players/" + playerId + "/tracking")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
@@ -204,5 +205,23 @@ class TrackedPlayerControllerTest {
         mockMvc.perform(post("/api/tracking/prices/refresh"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.results", hasSize(0)));
+    }
+
+    @Test
+    void refreshAllSkipsDiscardedPlayers() throws Exception {
+        mockMvc.perform(post("/api/players/" + playerId + "/tracking")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"status\":\"DISCARDED\"}"))
+                .andExpect(status().isCreated());
+
+        Player player = playerRepository.findById(playerId).orElseThrow();
+        player.setExternalId("alvaro-valles");
+        playerRepository.save(player);
+
+        mockMvc.perform(post("/api/tracking/prices/refresh"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.results", hasSize(0)));
+
+        verifyNoInteractions(playerMarketDataScraper);
     }
 }

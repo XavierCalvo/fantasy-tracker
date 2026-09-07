@@ -118,6 +118,30 @@ describe('TrackedPlayers', () => {
     expect(sorted.map((item) => item.id)).toEqual([1, 3, 2]);
   });
 
+  it('should sort by position (Portero, Defensa, ..., nulls last)', async () => {
+    fixture.detectChanges();
+    httpMock.expectOne('/api/tracking').flush(items);
+    await fixture.whenStable();
+
+    component.sortField.set('playerPosition');
+    fixture.detectChanges();
+
+    const sorted = component.filteredItems();
+    expect(sorted.map((item) => item.id)).toEqual([3, 2, 1]);
+  });
+
+  it('should sort by latest trend amount ascending, with players without a price last', async () => {
+    fixture.detectChanges();
+    httpMock.expectOne('/api/tracking').flush(items);
+    await fixture.whenStable();
+
+    component.sortField.set('latestTrendAmount');
+    fixture.detectChanges();
+
+    const sorted = component.filteredItems();
+    expect(sorted.map((item) => item.id)).toEqual([3, 1, 2]);
+  });
+
   it('should show an error state when the API call fails', async () => {
     fixture.detectChanges();
     httpMock.expectOne('/api/tracking').flush('error', { status: 500, statusText: 'Server Error' });

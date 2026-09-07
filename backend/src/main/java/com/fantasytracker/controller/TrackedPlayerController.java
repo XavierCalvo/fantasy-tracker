@@ -11,6 +11,7 @@ import com.fantasytracker.dto.TrackedPlayerResponse;
 import com.fantasytracker.model.Player;
 import com.fantasytracker.model.PlayerPrice;
 import com.fantasytracker.model.TrackedPlayer;
+import com.fantasytracker.model.TrackedPlayerStatus;
 import com.fantasytracker.repository.PlayerPriceRepository;
 import com.fantasytracker.repository.PlayerRepository;
 import com.fantasytracker.repository.TrackedPlayerRepository;
@@ -131,15 +132,20 @@ public class TrackedPlayerController {
     }
 
     /**
-     * Refreshes the market price of every tracked player in one call (the "Actualizar todos"
-     * bulk action). Unlike the single-player refresh, a scraping failure for one player (e.g. no
-     * active market) does not abort the batch: each player is attempted independently and the
-     * per-player outcome is reported back to the caller.
+     * Refreshes the market price of every actively tracked player in one call (the "Actualizar
+     * todos" bulk action). Players marked {@link TrackedPlayerStatus#DISCARDED} are skipped: a
+     * manual per-player refresh is still always available, but the bulk action is intentionally
+     * limited to players the user still cares about, to avoid needlessly hammering the external
+     * source. Unlike the single-player refresh, a scraping failure for one player (e.g. no active
+     * market) does not abort the batch: each player is attempted independently and the per-player
+     * outcome is reported back to the caller.
      */
-    @Operation(summary = "Actualizar precios de todos los jugadores en seguimiento", description = "Consulta el valor de mercado actual en la fuente externa para cada jugador en seguimiento y registra una nueva observación de precio. Los fallos individuales no interrumpen el resto del lote.")
+    @Operation(summary = "Actualizar precios de todos los jugadores en seguimiento activo", description = "Consulta el valor de mercado actual en la fuente externa para cada jugador en seguimiento activo (excluye los descartados) y registra una nueva observación de precio. Los fallos individuales no interrumpen el resto del lote.")
     @PostMapping("/api/tracking/prices/refresh")
     public BulkPriceRefreshResponse refreshAll() {
-        List<TrackedPlayer> tracked = trackedPlayerRepository.findAllWithPlayer();
+        List<TrackedPlayer> tracked = trackedPlayerRepository.findAllWithPlayer().stream()
+                .filter(t -> t.getStatus() != TrackedPlayerStatus.DISCARDED)
+                .toList();
         List<BulkPriceRefreshResponse.Item> results = new ArrayList<>();
 
         for (TrackedPlayer trackedPlayer : tracked) {
