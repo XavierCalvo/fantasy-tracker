@@ -8,6 +8,8 @@ import com.fantasytracker.model.Player;
 import com.fantasytracker.model.PlayerPrice;
 import com.fantasytracker.repository.PlayerPriceRepository;
 import com.fantasytracker.repository.PlayerRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/players/{playerId}/prices")
+@Tag(name = "Player Prices", description = "Histórico de precios de mercado de un jugador y actualización manual/automática del valor")
 public class PlayerPriceController {
 
     private final PlayerPriceRepository playerPriceRepository;
@@ -33,6 +36,7 @@ public class PlayerPriceController {
         this.playerMarketDataScraper = playerMarketDataScraper;
     }
 
+    @Operation(summary = "Listar histórico de precios", description = "Devuelve todas las observaciones de precio de un jugador, de más reciente a más antigua")
     @GetMapping
     public List<PlayerPriceResponse> list(@PathVariable Long playerId) {
         if (!playerRepository.existsById(playerId)) {
@@ -43,6 +47,7 @@ public class PlayerPriceController {
                 .toList();
     }
 
+    @Operation(summary = "Registrar precio manualmente", description = "Añade una observación de precio introducida a mano (valor, variación y tipo de tendencia)")
     @PostMapping
     public ResponseEntity<PlayerPriceResponse> create(@PathVariable Long playerId, @Valid @RequestBody PlayerPriceRequest request) {
         Player player = playerRepository.findById(playerId)
@@ -59,6 +64,7 @@ public class PlayerPriceController {
      * This is the manual "Actualizar" action; automated/scheduled refreshes will reuse the same
      * {@link PlayerMarketDataScraper}.
      */
+    @Operation(summary = "Actualizar precio (Actualizar)", description = "Consulta el valor de mercado actual en la fuente externa (futbolfantasy.com) y lo registra como nueva observación de precio")
     @PostMapping("/refresh")
     public ResponseEntity<PlayerPriceResponse> refresh(@PathVariable Long playerId) {
         Player player = playerRepository.findById(playerId)
