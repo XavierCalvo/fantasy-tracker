@@ -1,5 +1,7 @@
 package com.fantasytracker.acquisition;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -23,6 +25,8 @@ import java.util.regex.Pattern;
  */
 @Component
 public class FutbolFantasyPlayerScraper implements PlayerMarketDataScraper {
+
+    private static final Logger log = LoggerFactory.getLogger(FutbolFantasyPlayerScraper.class);
 
     private static final String PROFILE_URL_TEMPLATE = "https://www.futbolfantasy.com/jugadores/%s";
     private static final String MARKET_DETAIL_URL_TEMPLATE =
@@ -70,7 +74,14 @@ public class FutbolFantasyPlayerScraper implements PlayerMarketDataScraper {
         HttpResponse<String> response;
         try {
             response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (javax.net.ssl.SSLHandshakeException e) {
+            log.error("TLS handshake failed reaching {} for player '{}'. If this happens only when running " +
+                    "outside Docker, your JVM's trust store likely doesn't trust a TLS-inspecting corporate " +
+                    "proxy/antivirus root certificate; try running with " +
+                    "-Djavax.net.ssl.trustStoreType=Windows-ROOT on Windows.", url, externalId, e);
+            throw new PlayerMarketDataException("Failed to establish a secure connection to futbolfantasy.com for player '" + externalId + "'", e);
         } catch (IOException e) {
+            log.error("Failed to reach {} for player '{}'", url, externalId, e);
             throw new PlayerMarketDataException("Failed to reach futbolfantasy.com for player '" + externalId + "'", e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
