@@ -13,6 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatListModule } from '@angular/material/list';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { map } from 'rxjs';
 import { PlayerApi } from '../../core/services/player-api';
@@ -28,6 +29,7 @@ import {
 } from '../../core/models/tracked-player';
 import { PLAYER_POSITION_LABELS } from '../../core/models/player-position';
 import { StatusMessage } from '../../shared/status-message/status-message';
+import { isPriceStale } from '../../shared/price-staleness';
 
 @Component({
   imports: [
@@ -44,6 +46,7 @@ import { StatusMessage } from '../../shared/status-message/status-message';
     MatDatepickerModule,
     MatNativeDateModule,
     MatListModule,
+    MatTooltipModule,
     MatSnackBarModule,
     StatusMessage,
   ],
@@ -74,6 +77,7 @@ export class PlayerDetail {
   readonly player = signal<Player | null>(null);
   readonly prices = signal<PlayerPrice[]>([]);
   readonly latestPrice = computed(() => this.prices()[0] ?? null);
+  readonly latestPriceStale = computed(() => isPriceStale(this.latestPrice()?.capturedAt ?? null));
 
   readonly tracking = signal<TrackedPlayer | null>(null);
   readonly trackingSaving = signal(false);
@@ -156,10 +160,8 @@ export class PlayerDetail {
       error: (err: HttpErrorResponse) => {
         this.priceRefreshing.set(false);
         const message =
-          err.status === 400
-            ? 'Este jugador no tiene identificador externo configurado.'
-            : 'No se pudo obtener el precio actual.';
-        this.snackBar.open(message, 'Cerrar', { duration: 3000 });
+          err.error?.message ?? 'No se pudo obtener el precio actual.';
+        this.snackBar.open(message, 'Cerrar', { duration: 5000 });
       },
     });
   }

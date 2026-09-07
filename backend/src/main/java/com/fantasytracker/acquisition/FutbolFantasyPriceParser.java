@@ -62,7 +62,9 @@ public final class FutbolFantasyPriceParser {
         Element valueElement = document.selectFirst(VALUE_SELECTOR);
         if (valueElement == null) {
             throw new PlayerMarketDataException(
-                    "Could not find the '" + VALUE_SELECTOR + "' element on the player page");
+                    "No se encontró un valor de mercado para este jugador en futbolfantasy.com "
+                            + "(puede que no tenga mercado activo esta temporada, por ejemplo si está lesionado, "
+                            + "en el filial o no juega en LaLiga Fantasy)");
         }
 
         Matcher matcher = VALUE_PATTERN.matcher(valueElement.text());

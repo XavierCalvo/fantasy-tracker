@@ -147,25 +147,38 @@ The Angular workspace, PWA configuration, routing, player list/detail, price his
 
 # Phase 3 — Data Acquisition
 
+**Status:** 🟡 IN PROGRESS
+
 **Objective:** Stop depending on manually entered data.
 
 The application will progressively acquire player and market information from external sources.
 
 ### Planned steps
 
-1. Define the external data contract.
-2. Define player identity matching.
-3. Implement player synchronisation.
-4. Implement price synchronisation.
-5. Implement trend synchronisation.
-6. Store historical observations.
-7. Schedule data collection.
+1. Define the external data contract. 🟢 DONE — futbolfantasy.com player market value + trend, see `docs/04-backend.md`.
+2. Define player identity matching. 🟢 DONE — `Player.externalId` holds the futbolfantasy.com slug.
+3. Implement player synchronisation. ⚪ BACKLOG
+4. Implement price synchronisation. 🟡 IN PROGRESS — manual "Actualizar" refresh (single player and bulk) is implemented; scheduled/automatic synchronisation is still pending.
+5. Implement trend synchronisation. 🟢 DONE — trend type/amount are scraped and stored alongside price.
+6. Store historical observations. 🟢 DONE — reuses the existing `player_price` table/history.
+7. Schedule data collection. ⚪ BACKLOG
 
 ### Important constraint
 
 Scraping is deliberately deferred until the core application is stable.
 
 The data acquisition layer should be isolated from the rest of the application so that the source or acquisition mechanism can be replaced later.
+
+### Progress so far
+
+A first acquisition source has been implemented: `backend/src/main/java/com/fantasytracker/acquisition/` scrapes the current market value and trend for a player from futbolfantasy.com (`Player.externalId` is the page slug). The player's profile page only shows a loading placeholder for the value widget — the actual data is fetched by the page's own JavaScript from a second "market detail" endpoint keyed by an internal numeric id, so the scraper performs two HTTP requests (profile page to discover the id, then the market detail fragment) and parses the second response with Jsoup.
+
+This is exposed today as a **manual** action:
+
+* `POST /api/players/{playerId}/prices/refresh` — refresh a single player.
+* `POST /api/tracking/prices/refresh` — refresh every tracked player in one call, returning a per-player success/failure summary (a scraping failure for one player does not abort the others).
+
+Automatic/scheduled synchronisation (step 7) is intentionally left for later, closer to when the AWS deployment (Phase 5) is tackled, since it is a natural fit for an EventBridge-triggered Lambda or a Spring `@Scheduled` job.
 
 ### Exit criteria
 
@@ -267,16 +280,16 @@ This phase is intentionally open-ended and should only be prioritised once the p
 
 # Current Position
 
-Updated after starting the Frontend MVP:
+Updated after starting Data Acquisition:
 
 ```text
 Phase 0  ████████████████████  Foundation
 Phase 1  ████████████████████  Backend MVP
 Phase 2  ████████████████████  Frontend MVP
-Phase 3  ░░░░░░░░░░░░░░░░░░░  Data Acquisition
+Phase 3  ██████░░░░░░░░░░░░░  Data Acquisition
 Phase 4  ░░░░░░░░░░░░░░░░░░░  Analysis
 Phase 5  ░░░░░░░░░░░░░░░░░░░  AWS
 Phase 6  ░░░░░░░░░░░░░░░░░░░  Advanced
 ```
 
-Phase 0, Phase 1 and Phase 2 are complete. Phase 2 (Frontend MVP) finished with mobile layout polish, an end-to-end Docker Compose verification and Playwright E2E smoke tests. Phase 3 (Data Acquisition) is next.
+Phase 0, Phase 1 and Phase 2 are complete. Phase 3 (Data Acquisition) is under way: a futbolfantasy.com scraper (market value + trend) is implemented and wired to a manual "Actualizar" refresh, both for a single player and in bulk for the whole watchlist. Scheduled/automatic synchronisation is still pending, likely alongside the AWS deployment work in Phase 5.

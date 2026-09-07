@@ -47,7 +47,7 @@ class FutbolFantasyPriceParserTest {
 
         assertThatThrownBy(() -> FutbolFantasyPriceParser.parse(html))
                 .isInstanceOf(PlayerMarketDataException.class)
-                .hasMessageContaining("valor-actual");
+                .hasMessageContaining("No se encontró un valor de mercado");
     }
 
     @Test

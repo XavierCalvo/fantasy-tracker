@@ -24,6 +24,10 @@ describe('TrackedPlayerApi', () => {
     playerName: 'Test Player',
     playerTeam: 'Test Team',
     playerPosition: 'DELANTERO',
+    latestPrice: null,
+    latestTrendAmount: null,
+    latestTrendType: null,
+    latestPriceCapturedAt: null,
   };
 
   beforeEach(() => {
@@ -88,5 +92,16 @@ describe('TrackedPlayerApi', () => {
     const req = httpMock.expectOne('/api/tracking/1');
     expect(req.request.method).toBe('DELETE');
     req.flush(null);
+  });
+
+  it('should refresh prices for all tracked players', () => {
+    const response = { results: [] };
+    service.refreshAllPrices().subscribe((result) => {
+      expect(result).toEqual(response);
+    });
+
+    const req = httpMock.expectOne('/api/tracking/prices/refresh');
+    expect(req.request.method).toBe('POST');
+    req.flush(response);
   });
 });

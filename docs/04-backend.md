@@ -165,17 +165,24 @@ FT-074 adds a `@Tag` per controller (Players, Teams, Tracking, Player Prices) an
 
 | ID     | Status    | Priority | Task                                 |
 | ------ | --------- | -------- | ------------------------------------ |
-| FT-075 | ⚪ BACKLOG | P0       | Define external player data contract |
-| FT-076 | ⚪ BACKLOG | P0       | Define external player ID mapping    |
+| FT-075 | 🟢 DONE   | P0       | Define external player data contract (futbolfantasy.com market value + trend, scraped via a two-step fetch: profile page → numeric market id → market-detail fragment) |
+| FT-076 | 🟢 DONE   | P0       | Define external player ID mapping (`Player.externalId` holds the futbolfantasy.com page slug) |
 | FT-077 | ⚪ BACKLOG | P0       | Implement player synchronisation     |
-| FT-078 | ⚪ BACKLOG | P0       | Implement price synchronisation      |
-| FT-079 | ⚪ BACKLOG | P1       | Implement trend synchronisation      |
+| FT-078 | 🟡 IN PROGRESS | P0  | Implement price synchronisation — manual refresh implemented (`POST /api/players/{id}/prices/refresh` for one player, `POST /api/tracking/prices/refresh` for every tracked player at once); scheduled/automatic synchronisation still pending |
+| FT-079 | 🟢 DONE   | P1       | Implement trend synchronisation (trend type/amount scraped and stored alongside price) |
 | FT-080 | ⚪ BACKLOG | P1       | Validate imported data               |
 | FT-081 | ⚪ BACKLOG | P1       | Prevent duplicate price observations |
-| FT-082 | ⚪ BACKLOG | P1       | Isolate external-source integration  |
+| FT-082 | 🟢 DONE   | P1       | Isolate external-source integration (`com.fantasytracker.acquisition` package: `PlayerMarketDataScraper` interface, `FutbolFantasyPlayerScraper`/`FutbolFantasyPriceParser` implementation, `PlayerMarketDataException`) |
 | FT-083 | ⚪ BACKLOG | P1       | Implement scheduled acquisition      |
+| FT-084 | 🟢 DONE   | P1       | Bulk refresh endpoint (`POST /api/tracking/prices/refresh`) and "Actualizar todos" button on the watchlist screen; per-player scraping failures are reported individually and do not abort the batch |
 
 Scraping should only be implemented after the external data contract and acquisition boundary are clearly defined.
+
+### Notes
+
+* FT-075/FT-076/FT-082: the player's profile page (`https://www.futbolfantasy.com/jugadores/<externalId>`) does not itself contain the market value widget — it is loaded client-side via AJAX from a second endpoint keyed by an internal numeric id embedded in the page's inline script. `FutbolFantasyPlayerScraper` performs both requests; `FutbolFantasyPriceParser` parses the second response with Jsoup.
+* FT-078/FT-084: both the single-player and bulk refresh endpoints reuse the same `PlayerMarketDataScraper`; a missing/unparseable market value raises `PlayerMarketDataException`, which is surfaced as a `502 Bad Gateway` with a descriptive message for the single-player endpoint, or recorded per-player in the bulk endpoint's response so the rest of the batch still completes.
+* `GET /api/tracking` was enriched to also return each tracked player's most recent price/trend/capture date, so the watchlist can show it without an extra request per player; the frontend flags any price older than 24h with a clock icon (both in the watchlist and in the player detail screen).
 
 ---
 
@@ -234,12 +241,12 @@ Scraping should only be implemented after the external data contract and acquisi
 
 The recommended execution order from the current state is:
 
-1. **FT-044 — Finish responsive/mobile layout polish**
-2. Verify the Docker Compose stack end-to-end (backend + frontend + db)
-3. Add frontend E2E tests for the core player/tracking journey
-4. **FT-075 — Define external player data contract** (Phase 3 kickoff, once Phase 2 is closed)
+1. **FT-080/FT-081 — Validate imported data / prevent duplicate price observations** (basic guardrails around the scraper before relying on it more heavily)
+2. **FT-077 — Implement player synchronisation** (currently players are still created manually; needed before scheduled acquisition makes sense)
+3. **FT-083 — Implement scheduled acquisition** (turn the manual "Actualizar"/"Actualizar todos" buttons into an automatic job, likely tied to the AWS deployment in Phase 5, e.g. an EventBridge-triggered Lambda or a Spring `@Scheduled` job)
+4. Once Phase 3's core loop is reliable, move to Phase 4 (Analysis) or Phase 5 (AWS) depending on priorities
 
-Phase 2 (Frontend MVP) core functionality is implemented; remaining work is UX polish and end-to-end verification before moving to Phase 3 (Data Acquisition).
+Phase 2 (Frontend MVP) is complete. Phase 3 (Data Acquisition) is under way: the futbolfantasy.com scraper (FT-075/FT-076/FT-079/FT-082), manual single/bulk price refresh (FT-078/FT-084) and watchlist trend/staleness display are implemented; player synchronisation and scheduled acquisition remain.
 
 ---
 

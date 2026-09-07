@@ -44,6 +44,14 @@
   color: #c62828;
 }
 
+.player-detail__stale-icon {
+  font-size: 1.1rem;
+  height: 1.1rem;
+  width: 1.1rem;
+  color: #ef6c00;
+  align-self: center;
+}
+
 .player-detail__tracking-form {
   display: flex;
   flex-direction: column;

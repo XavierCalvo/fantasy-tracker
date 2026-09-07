@@ -12,6 +12,36 @@
   flex: 1 1 180px;
 }
 
+.tracked-players__refresh-all {
+  white-space: nowrap;
+}
+
+.tracked-players__price-line {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.tracked-players__trend-amount {
+  font-weight: 500;
+}
+
+.tracked-players__trend-amount--up {
+  color: #2e7d32;
+}
+
+.tracked-players__trend-amount--down {
+  color: #c62828;
+}
+
+.tracked-players__stale-icon {
+  font-size: 1.05rem;
+  height: 1.05rem;
+  width: 1.05rem;
+  color: #ef6c00;
+}
+
 @media (max-width: 400px) {
   .tracked-players__status-filter,
   .tracked-players__sort-field {

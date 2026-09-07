@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface PlayerPriceRepository extends JpaRepository<PlayerPrice, Long> {
     List<PlayerPrice> findByPlayerIdOrderByCapturedAtDesc(Long playerId);
+
+    List<PlayerPrice> findByPlayerIdInOrderByCapturedAtDesc(List<Long> playerIds);
 }

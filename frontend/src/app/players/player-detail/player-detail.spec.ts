@@ -142,4 +142,39 @@ describe('PlayerDetail', () => {
 
     expect(component.prices()[0]).toEqual(newPrice);
   });
+
+  it('should show the stale icon when the latest price is older than 24h', async () => {
+    await setup();
+    fixture.detectChanges();
+
+    httpMock.expectOne('/api/players/1').flush(player);
+    httpMock.expectOne('/api/players/1/prices').flush(prices);
+    httpMock.expectOne('/api/players/1/tracking').flush(tracking);
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(component.latestPriceStale()).toBe(true);
+    expect(fixture.nativeElement.querySelector('.player-detail__stale-icon')).toBeTruthy();
+  });
+
+  it('should surface the backend error message when refreshing the price fails', async () => {
+    const playerWithExternalId: Player = { ...player, externalId: 'no-market-player' };
+    await setup();
+    fixture.detectChanges();
+
+    httpMock.expectOne('/api/players/1').flush(playerWithExternalId);
+    httpMock.expectOne('/api/players/1/prices').flush(prices);
+    httpMock.expectOne('/api/players/1/tracking').flush(tracking);
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    component.refreshPrice();
+    const refreshReq = httpMock.expectOne('/api/players/1/prices/refresh');
+    refreshReq.flush(
+      { message: 'No se encontró un valor de mercado para este jugador' },
+      { status: 502, statusText: 'Bad Gateway' },
+    );
+
+    expect(component.priceRefreshing()).toBe(false);
+  });
 });

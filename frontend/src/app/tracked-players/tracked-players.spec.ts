@@ -23,6 +23,10 @@ describe('TrackedPlayers', () => {
       notes: null,
       createdAt: '2024-01-01T00:00:00Z',
       updatedAt: '2024-01-01T00:00:00Z',
+      latestPrice: 50000000,
+      latestTrendAmount: 100000,
+      latestTrendType: 'STABLE_UP',
+      latestPriceCapturedAt: new Date().toISOString(),
     },
     {
       id: 2,
@@ -36,6 +40,10 @@ describe('TrackedPlayers', () => {
       notes: null,
       createdAt: '2024-01-01T00:00:00Z',
       updatedAt: '2024-01-01T00:00:00Z',
+      latestPrice: null,
+      latestTrendAmount: null,
+      latestTrendType: null,
+      latestPriceCapturedAt: null,
     },
     {
       id: 3,
@@ -49,6 +57,10 @@ describe('TrackedPlayers', () => {
       notes: null,
       createdAt: '2024-01-01T00:00:00Z',
       updatedAt: '2024-01-01T00:00:00Z',
+      latestPrice: 9000000,
+      latestTrendAmount: -500000,
+      latestTrendType: 'DECELERATING_DOWN',
+      latestPriceCapturedAt: '2020-01-01T00:00:00Z',
     },
   ];
 
@@ -113,5 +125,41 @@ describe('TrackedPlayers', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('No se ha podido conectar con el backend');
+  });
+
+  it('should display the latest price and trend for a player', async () => {
+    fixture.detectChanges();
+    httpMock.expectOne('/api/tracking').flush(items);
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('50,000,000');
+    expect(fixture.nativeElement.textContent).toContain('Estable (subida)');
+  });
+
+  it('should mark a stale price (older than 24h) with the stale icon', async () => {
+    fixture.detectChanges();
+    httpMock.expectOne('/api/tracking').flush(items);
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const staleIcons = fixture.nativeElement.querySelectorAll('.tracked-players__stale-icon');
+    expect(staleIcons.length).toBe(1);
+  });
+
+  it('should refresh all prices and reload the list when the bulk refresh button is clicked', async () => {
+    fixture.detectChanges();
+    httpMock.expectOne('/api/tracking').flush(items);
+    await fixture.whenStable();
+
+    component.refreshAllPrices();
+    httpMock.expectOne('/api/tracking/prices/refresh').flush({
+      results: [
+        { playerId: 1, playerName: 'Alpha Striker', success: true, price: null, error: null },
+      ],
+    });
+    await fixture.whenStable();
+
+    httpMock.expectOne('/api/tracking').flush(items);
   });
 });

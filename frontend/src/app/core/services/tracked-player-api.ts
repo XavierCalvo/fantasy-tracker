@@ -1,7 +1,12 @@
 import { Service, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { TrackedPlayer, TrackedPlayerListItem, TrackedPlayerRequest } from '../models/tracked-player';
+import {
+  BulkPriceRefreshResponse,
+  TrackedPlayer,
+  TrackedPlayerListItem,
+  TrackedPlayerRequest,
+} from '../models/tracked-player';
 
 @Service()
 export class TrackedPlayerApi {
@@ -25,5 +30,9 @@ export class TrackedPlayerApi {
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`/api/tracking/${id}`);
+  }
+
+  refreshAllPrices(): Observable<BulkPriceRefreshResponse> {
+    return this.http.post<BulkPriceRefreshResponse>('/api/tracking/prices/refresh', {});
   }
 }

@@ -32,6 +32,13 @@
           @if (price.trendType) {
             <span class="player-detail__trend">{{ trendLabels[price.trendType] }}</span>
           }
+          @if (latestPriceStale()) {
+            <mat-icon
+              class="player-detail__stale-icon"
+              matTooltip="Precio desactualizado (más de 24h)"
+              aria-label="Precio desactualizado (más de 24h)"
+            >schedule</mat-icon>
+          }
         </p>
       } @else {
         <p class="player-detail__price player-detail__price--empty">Sin precio registrado todavía.</p>

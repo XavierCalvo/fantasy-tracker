@@ -26,6 +26,21 @@
   >
     <mat-icon>{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
   </button>
+
+  <button
+    type="button"
+    mat-stroked-button
+    class="tracked-players__refresh-all"
+    [disabled]="refreshingAll()"
+    (click)="refreshAllPrices()"
+  >
+    <mat-icon>refresh</mat-icon>
+    @if (refreshingAll()) {
+      Actualizando...
+    } @else {
+      Actualizar todos
+    }
+  </button>
 </div>
 
 @if (loading()) {
@@ -51,6 +66,30 @@
             · Cláusula libre: {{ item.clauseReleaseDate | date: 'dd/MM/yyyy' }}
           }
         </span>
+        @if (item.latestPrice !== null) {
+          <span matListItemLine class="tracked-players__price-line">
+            {{ item.latestPrice | number: '1.0-0' }} €
+            @if (item.latestTrendAmount !== null) {
+              <span
+                class="tracked-players__trend-amount"
+                [class.tracked-players__trend-amount--up]="item.latestTrendAmount > 0"
+                [class.tracked-players__trend-amount--down]="item.latestTrendAmount < 0"
+              >
+                {{ item.latestTrendAmount > 0 ? '+' : '' }}{{ item.latestTrendAmount | number: '1.0-0' }} €
+              </span>
+            }
+            @if (item.latestTrendType) {
+              · {{ trendLabels[item.latestTrendType] }}
+            }
+            @if (isPriceStale(item.latestPriceCapturedAt)) {
+              <mat-icon
+                class="tracked-players__stale-icon"
+                matTooltip="Precio desactualizado (más de 24h)"
+                aria-label="Precio desactualizado (más de 24h)"
+              >schedule</mat-icon>
+            }
+          </span>
+        }
         <mat-chip-set matListItemMeta>
           <mat-chip>{{ statusLabels[item.status] }}</mat-chip>
         </mat-chip-set>

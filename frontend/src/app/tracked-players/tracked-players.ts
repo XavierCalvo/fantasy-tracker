@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,9 +7,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
-import { catchError, map, of, startWith } from 'rxjs';
 import { TrackedPlayerApi } from '../core/services/tracked-player-api';
+import {
+  PLAYER_PRICE_TREND_LABELS,
+} from '../core/models/player-price';
 import {
   TRACKED_PLAYER_STATUS_LABELS,
   TrackedPlayerListItem,
@@ -18,12 +21,7 @@ import {
 } from '../core/models/tracked-player';
 import { PLAYER_POSITION_LABELS } from '../core/models/player-position';
 import { StatusMessage } from '../shared/status-message/status-message';
-
-interface TrackedPlayersState {
-  loading: boolean;
-  error: boolean;
-  items: TrackedPlayerListItem[];
-}
+import { isPriceStale } from '../shared/price-staleness';
 
 type StatusFilter = TrackedPlayerStatus | 'ALL';
 type SortField = 'clauseReleaseDate' | 'playerName' | 'status';
@@ -33,12 +31,15 @@ type SortDirection = 'asc' | 'desc';
   imports: [
     RouterLink,
     DatePipe,
+    DecimalPipe,
     MatListModule,
     MatFormFieldModule,
     MatSelectModule,
     MatButtonModule,
     MatChipsModule,
     MatIconModule,
+    MatTooltipModule,
+    MatSnackBarModule,
     FormsModule,
     StatusMessage,
   ],
@@ -49,30 +50,77 @@ type SortDirection = 'asc' | 'desc';
 })
 export class TrackedPlayers {
   private readonly trackedPlayerApi = inject(TrackedPlayerApi);
+  private readonly snackBar = inject(MatSnackBar);
 
   readonly statusLabels = TRACKED_PLAYER_STATUS_LABELS;
   readonly positionLabels = PLAYER_POSITION_LABELS;
+  readonly trendLabels = PLAYER_PRICE_TREND_LABELS;
   readonly statusOptions: TrackedPlayerStatus[] = ['WATCHING', 'OWNED', 'DISCARDED'];
+  readonly isPriceStale = isPriceStale;
 
   readonly statusFilter = signal<StatusFilter>('ALL');
   readonly sortField = signal<SortField>('clauseReleaseDate');
   readonly sortDirection = signal<SortDirection>('asc');
 
-  private readonly state = toSignal(
-    this.trackedPlayerApi.list().pipe(
-      map((items): TrackedPlayersState => ({ loading: false, error: false, items })),
-      startWith<TrackedPlayersState>({ loading: true, error: false, items: [] }),
-      catchError(() => of<TrackedPlayersState>({ loading: false, error: true, items: [] })),
-    ),
-    { initialValue: { loading: true, error: false, items: [] } as TrackedPlayersState },
-  );
+  readonly loading = signal(true);
+  readonly error = signal(false);
+  readonly items = signal<TrackedPlayerListItem[]>([]);
+  readonly refreshingAll = signal(false);
 
-  readonly loading = () => this.state().loading;
-  readonly error = () => this.state().error;
+  constructor() {
+    this.loadTracked();
+  }
+
+  private loadTracked(): void {
+    this.loading.set(true);
+    this.error.set(false);
+    this.trackedPlayerApi.list().subscribe({
+      next: (items) => {
+        this.items.set(items);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.loading.set(false);
+        this.error.set(true);
+      },
+    });
+  }
+
+  refreshAllPrices(): void {
+    if (this.refreshingAll()) {
+      return;
+    }
+
+    this.refreshingAll.set(true);
+    this.trackedPlayerApi.refreshAllPrices().subscribe({
+      next: (response) => {
+        this.refreshingAll.set(false);
+        const failures = response.results.filter((item) => !item.success);
+        if (failures.length === 0) {
+          this.snackBar.open(
+            `Precios actualizados (${response.results.length} jugadores)`,
+            'Cerrar',
+            { duration: 3000 },
+          );
+        } else {
+          this.snackBar.open(
+            `${response.results.length - failures.length} de ${response.results.length} precios actualizados. Fallos: ${failures.map((f) => f.playerName).join(', ')}`,
+            'Cerrar',
+            { duration: 6000 },
+          );
+        }
+        this.loadTracked();
+      },
+      error: () => {
+        this.refreshingAll.set(false);
+        this.snackBar.open('No se pudieron actualizar los precios', 'Cerrar', { duration: 3000 });
+      },
+    });
+  }
 
   readonly filteredItems = computed(() => {
     const filter = this.statusFilter();
-    const items = this.state().items;
+    const items = this.items();
     const filtered = filter === 'ALL' ? items : items.filter((item) => item.status === filter);
     return this.sortItems(filtered);
   });

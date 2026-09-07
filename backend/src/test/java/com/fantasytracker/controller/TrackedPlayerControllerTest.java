@@ -1,6 +1,11 @@
 package com.fantasytracker.controller;
 
+import com.fantasytracker.acquisition.PlayerMarketDataException;
+import com.fantasytracker.acquisition.PlayerMarketDataScraper;
+import com.fantasytracker.acquisition.PlayerMarketPrice;
 import com.fantasytracker.model.Player;
+import com.fantasytracker.model.PlayerPrice;
+import com.fantasytracker.model.PlayerPriceTrendType;
 import com.fantasytracker.repository.PlayerPriceRepository;
 import com.fantasytracker.repository.PlayerRepository;
 import com.fantasytracker.repository.TrackedPlayerRepository;
@@ -9,9 +14,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -30,6 +39,9 @@ class TrackedPlayerControllerTest {
 
     @Autowired
     private TrackedPlayerRepository trackedPlayerRepository;
+
+    @MockBean
+    private PlayerMarketDataScraper playerMarketDataScraper;
 
     private Long playerId;
 
@@ -116,5 +128,81 @@ class TrackedPlayerControllerTest {
                 .andExpect(jsonPath("$[0].playerName").value("Player"))
                 .andExpect(jsonPath("$[0].status").value("OWNED"))
                 .andExpect(jsonPath("$[0].clauseReleaseDate").value("2026-06-30"));
+    }
+
+    @Test
+    void listIncludesLatestPriceWhenAvailable() throws Exception {
+        mockMvc.perform(post("/api/players/" + playerId + "/tracking")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isCreated());
+
+        Player player = playerRepository.findById(playerId).orElseThrow();
+        playerPriceRepository.save(new PlayerPrice(player, 1_000_000L, 10_000L, PlayerPriceTrendType.STABLE_UP));
+        playerPriceRepository.save(new PlayerPrice(player, 1_050_000L, 50_000L, PlayerPriceTrendType.ACCELERATING_UP));
+
+        mockMvc.perform(get("/api/tracking"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].latestPrice").value(1_050_000))
+                .andExpect(jsonPath("$[0].latestTrendAmount").value(50_000))
+                .andExpect(jsonPath("$[0].latestTrendType").value("ACCELERATING_UP"))
+                .andExpect(jsonPath("$[0].latestPriceCapturedAt").exists());
+    }
+
+    @Test
+    void listOmitsLatestPriceWhenNoneRecorded() throws Exception {
+        mockMvc.perform(post("/api/players/" + playerId + "/tracking")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/api/tracking"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].latestPrice").doesNotExist());
+    }
+
+    @Test
+    void refreshAllRefreshesEveryTrackedPlayerAndReportsPerPlayerResults() throws Exception {
+        mockMvc.perform(post("/api/players/" + playerId + "/tracking")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isCreated());
+
+        Player ok = playerRepository.findById(playerId).orElseThrow();
+        ok.setExternalId("alvaro-valles");
+        playerRepository.save(ok);
+
+        Long secondPlayerId = playerRepository.save(new Player("Second Player")).getId();
+        mockMvc.perform(post("/api/players/" + secondPlayerId + "/tracking")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isCreated());
+        Player failing = playerRepository.findById(secondPlayerId).orElseThrow();
+        failing.setExternalId("no-market-player");
+        playerRepository.save(failing);
+
+        when(playerMarketDataScraper.fetchLatestPrice("alvaro-valles"))
+                .thenReturn(new PlayerMarketPrice(44_766_796L, 1_618_275L, PlayerPriceTrendType.ACCELERATING_STRONGLY_UP));
+        when(playerMarketDataScraper.fetchLatestPrice("no-market-player"))
+                .thenThrow(new PlayerMarketDataException("No se encontró un valor de mercado para este jugador"));
+
+        mockMvc.perform(post("/api/tracking/prices/refresh"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.results", hasSize(2)))
+                .andExpect(jsonPath("$.results[?(@.playerId == " + playerId + ")].success").value(hasItem(true)))
+                .andExpect(jsonPath("$.results[?(@.playerId == " + secondPlayerId + ")].success").value(hasItem(false)))
+                .andExpect(jsonPath("$.results[?(@.playerId == " + secondPlayerId + ")].error")
+                        .value(hasItem("No se encontró un valor de mercado para este jugador")));
+
+        mockMvc.perform(get("/api/players/" + playerId + "/prices"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
+    }
+
+    @Test
+    void refreshAllReturnsEmptyResultsWhenNoPlayersTracked() throws Exception {
+        mockMvc.perform(post("/api/tracking/prices/refresh"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.results", hasSize(0)));
     }
 }
