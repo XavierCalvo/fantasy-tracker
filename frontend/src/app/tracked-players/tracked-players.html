@@ -1,0 +1,60 @@
+<div class="tracked-players__filters">
+  <mat-form-field appearance="outline" class="tracked-players__status-filter">
+    <mat-label>Estado</mat-label>
+    <mat-select [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)">
+      <mat-option value="ALL">Todos</mat-option>
+      @for (status of statusOptions; track status) {
+        <mat-option [value]="status">{{ statusLabels[status] }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="tracked-players__sort-field">
+    <mat-label>Ordenar por</mat-label>
+    <mat-select [ngModel]="sortField()" (ngModelChange)="sortField.set($event)">
+      <mat-option value="clauseReleaseDate">Fecha de cláusula</mat-option>
+      <mat-option value="playerName">Nombre</mat-option>
+      <mat-option value="status">Estado</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <button
+    type="button"
+    mat-icon-button
+    (click)="toggleSortDirection()"
+    [attr.aria-label]="sortDirection() === 'asc' ? 'Orden ascendente' : 'Orden descendente'"
+  >
+    <mat-icon>{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+  </button>
+</div>
+
+@if (loading()) {
+  <app-status-message mode="loading" message="Cargando jugadores en seguimiento..."></app-status-message>
+} @else if (error()) {
+  <app-status-message
+    mode="error"
+    message="No se ha podido conectar con el backend. Inténtalo de nuevo más tarde."
+  ></app-status-message>
+} @else if (filteredItems().length === 0) {
+  <app-status-message
+    mode="empty"
+    message="No hay jugadores en seguimiento con este filtro."
+  ></app-status-message>
+} @else {
+  <mat-nav-list>
+    @for (item of filteredItems(); track item.id) {
+      <a mat-list-item [routerLink]="['/players', item.playerId]" class="tracked-players__item">
+        <span matListItemTitle>{{ item.playerName }}</span>
+        <span matListItemLine>
+          {{ item.playerTeam }} · {{ item.playerPosition }}
+          @if (item.clauseReleaseDate) {
+            · Cláusula libre: {{ item.clauseReleaseDate | date: 'dd/MM/yyyy' }}
+          }
+        </span>
+        <mat-chip-set matListItemMeta>
+          <mat-chip>{{ statusLabels[item.status] }}</mat-chip>
+        </mat-chip-set>
+      </a>
+    }
+  </mat-nav-list>
+}

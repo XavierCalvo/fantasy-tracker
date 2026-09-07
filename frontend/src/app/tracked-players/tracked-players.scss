@@ -1,0 +1,13 @@
+.tracked-players__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.tracked-players__status-filter,
+.tracked-players__sort-field {
+  min-width: 180px;
+  flex: 1 1 180px;
+}

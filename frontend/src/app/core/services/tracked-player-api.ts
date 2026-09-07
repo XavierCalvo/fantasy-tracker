@@ -1,7 +1,7 @@
 import { Service, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { TrackedPlayer, TrackedPlayerRequest } from '../models/tracked-player';
+import { TrackedPlayer, TrackedPlayerListItem, TrackedPlayerRequest } from '../models/tracked-player';
 
 @Service()
 export class TrackedPlayerApi {
@@ -9,6 +9,10 @@ export class TrackedPlayerApi {
 
   getByPlayer(playerId: number): Observable<TrackedPlayer> {
     return this.http.get<TrackedPlayer>(`/api/players/${playerId}/tracking`);
+  }
+
+  list(): Observable<TrackedPlayerListItem[]> {
+    return this.http.get<TrackedPlayerListItem[]>('/api/tracking');
   }
 
   create(playerId: number, request: TrackedPlayerRequest): Observable<TrackedPlayer> {

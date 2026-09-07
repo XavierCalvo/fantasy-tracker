@@ -483,13 +483,14 @@ Authentication is not part of the initial MVP, but this must be reconsidered bef
 | Player detail            | 🟢 DONE   |
 | Price history            | 🟢 DONE   |
 | Tracking UI              | 🟢 DONE   |
+| Tracked-players watchlist | 🟢 DONE  |
 | API services             | 🟢 DONE   |
 | Frontend tests           | 🟢 DONE   |
 | E2E tests                | ⚪ BACKLOG |
 | Accessibility            | ⚪ BACKLOG |
 | Analytics UI             | ⚪ BACKLOG |
 
-Phase 2 core functionality is implemented: the Angular workspace (standalone components, Vitest, Angular Material, PWA/service worker, dev-server proxy, Docker/nginx deployment), the `PlayerApi`/`PlayerPriceApi`/`TrackedPlayerApi` services, the player list/detail screens, price history and the tracking form (status, clause, clause release date, notes) all exist and are covered by unit tests. Remaining work: finish responsive/mobile layout polish, add E2E tests and accessibility review.
+Phase 2 core functionality is implemented: the Angular workspace (standalone components, Vitest, Angular Material, PWA/service worker, dev-server proxy, Docker/nginx deployment), the `PlayerApi`/`PlayerPriceApi`/`TrackedPlayerApi` services, the player list/detail screens, price history and the tracking form (status, clause, clause release date, notes) all exist and are covered by unit tests. A dedicated **watchlist screen** (`TrackedPlayers`, route `/tracked`) lists every tracked player enriched with player name/team/position, filterable by status and sortable by clause release date, name or status; it is the app's default landing route. Remaining work: finish responsive/mobile layout polish, add E2E tests and accessibility review.
 
 ---
 

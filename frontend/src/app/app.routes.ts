@@ -1,7 +1,11 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'players' },
+  { path: '', pathMatch: 'full', redirectTo: 'tracked' },
+  {
+    path: 'tracked',
+    loadComponent: () => import('./tracked-players/tracked-players').then((m) => m.TrackedPlayers),
+  },
   {
     path: 'players',
     loadComponent: () => import('./players/player-list/player-list').then((m) => m.PlayerList),
@@ -10,5 +14,5 @@ export const routes: Routes = [
     path: 'players/:id',
     loadComponent: () => import('./players/player-detail/player-detail').then((m) => m.PlayerDetail),
   },
-  { path: '**', redirectTo: 'players' },
+  { path: '**', redirectTo: 'tracked' },
 ];

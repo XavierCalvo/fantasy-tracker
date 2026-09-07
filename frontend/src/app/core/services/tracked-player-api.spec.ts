@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TrackedPlayerApi } from './tracked-player-api';
-import { TrackedPlayer } from '../models/tracked-player';
+import { TrackedPlayer, TrackedPlayerListItem } from '../models/tracked-player';
 
 describe('TrackedPlayerApi', () => {
   let service: TrackedPlayerApi;
@@ -17,6 +17,13 @@ describe('TrackedPlayerApi', () => {
     notes: null,
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-01T00:00:00Z',
+  };
+
+  const trackingListItem: TrackedPlayerListItem = {
+    ...tracking,
+    playerName: 'Test Player',
+    playerTeam: 'Test Team',
+    playerPosition: 'FWD',
   };
 
   beforeEach(() => {
@@ -43,6 +50,16 @@ describe('TrackedPlayerApi', () => {
     const req = httpMock.expectOne('/api/players/1/tracking');
     expect(req.request.method).toBe('GET');
     req.flush(tracking);
+  });
+
+  it('should list all tracked players', () => {
+    service.list().subscribe((result) => {
+      expect(result).toEqual([trackingListItem]);
+    });
+
+    const req = httpMock.expectOne('/api/tracking');
+    expect(req.request.method).toBe('GET');
+    req.flush([trackingListItem]);
   });
 
   it('should create tracking information', () => {

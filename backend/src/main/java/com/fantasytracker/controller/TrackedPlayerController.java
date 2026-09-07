@@ -1,5 +1,6 @@
 package com.fantasytracker.controller;
 
+import com.fantasytracker.dto.TrackedPlayerListItemResponse;
 import com.fantasytracker.dto.TrackedPlayerRequest;
 import com.fantasytracker.dto.TrackedPlayerResponse;
 import com.fantasytracker.model.Player;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -29,6 +31,13 @@ public class TrackedPlayerController {
         return trackedPlayerRepository.findByPlayerId(playerId)
                 .map(TrackedPlayerResponse::from)
                 .orElseThrow(() -> new NoSuchElementException("Tracking for player " + playerId + " not found"));
+    }
+
+    @GetMapping("/api/tracking")
+    public List<TrackedPlayerListItemResponse> listAll() {
+        return trackedPlayerRepository.findAllWithPlayer().stream()
+                .map(TrackedPlayerListItemResponse::from)
+                .toList();
     }
 
     @PostMapping("/api/players/{playerId}/tracking")

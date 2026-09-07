@@ -23,3 +23,18 @@ export interface TrackedPlayerRequest {
   clauseReleaseDate?: string | null;
   notes?: string | null;
 }
+
+/** Enriched row returned by GET /api/tracking, used by the watchlist screen. */
+export interface TrackedPlayerListItem {
+  id: number;
+  playerId: number;
+  playerName: string;
+  playerTeam: string | null;
+  playerPosition: string | null;
+  status: TrackedPlayerStatus;
+  clause: number | null;
+  clauseReleaseDate: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}

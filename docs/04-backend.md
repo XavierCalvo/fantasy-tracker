@@ -138,12 +138,13 @@ The backend must expose enough functionality for the frontend to perform the com
 | FT-064 | 🟢 DONE   | P1       | Store clause release date   |
 | FT-065 | 🟢 DONE   | P1       | Store player notes          |
 | FT-066 | 🟢 DONE   | P1       | Create tracked-player view  |
+| FT-067 | 🟢 DONE   | P1       | Add `GET /api/tracking` backend endpoint (list all tracked players enriched with player name/team/position, used by the watchlist screen) |
 
 ### Phase 2 acceptance criteria
 
 A complete player can be viewed and managed from a mobile browser, including market information and personal tracking information.
 
-All acceptance criteria are met for the core flow: `PlayerApi`/`PlayerPriceApi`/`TrackedPlayerApi` cover the REST contract, `PlayerList`/`PlayerDetail` render players, price history and a tracking form (status, clause, clause release date, notes), and a shared `StatusMessage` component provides consistent loading/error/empty states. Unit tests (Vitest) cover all services and components. Remaining polish items: richer mobile navigation and an end-to-end verification of the Docker Compose stack.
+All acceptance criteria are met for the core flow: `PlayerApi`/`PlayerPriceApi`/`TrackedPlayerApi` cover the REST contract, `PlayerList`/`PlayerDetail` render players, price history and a tracking form (status, clause, clause release date, notes), and a shared `StatusMessage` component provides consistent loading/error/empty states. Unit tests (Vitest) cover all services and components. FT-066 is implemented as a dedicated **watchlist screen** (`TrackedPlayers`, route `/tracked`) that lists every tracked player, filterable by status and sortable by clause release date, name or status; it is now the app's default landing route, since it is more actionable to the user than a bare player list. This required a small backend addition (FT-067: `GET /api/tracking`, returning tracked players joined with player name/team/position) since no endpoint previously existed to list tracked players across all players. Remaining polish items: richer mobile navigation and an end-to-end verification of the Docker Compose stack.
 
 ---
 

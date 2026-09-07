@@ -102,4 +102,19 @@ class TrackedPlayerControllerTest {
         mockMvc.perform(get("/api/players/" + playerId + "/tracking"))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void listsAllTrackedPlayersWithPlayerInfo() throws Exception {
+        mockMvc.perform(post("/api/players/" + playerId + "/tracking")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"status\":\"OWNED\",\"clauseReleaseDate\":\"2026-06-30\"}"))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/api/tracking"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].playerId").value(playerId))
+                .andExpect(jsonPath("$[0].playerName").value("Player"))
+                .andExpect(jsonPath("$[0].status").value("OWNED"))
+                .andExpect(jsonPath("$[0].clauseReleaseDate").value("2026-06-30"));
+    }
 }

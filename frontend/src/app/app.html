@@ -1,5 +1,8 @@
 <mat-toolbar color="primary" class="app-toolbar">
-  <a routerLink="/players" class="app-toolbar__title">Fantasy Tracker</a>
+  <a routerLink="/tracked" class="app-toolbar__title">Fantasy Tracker</a>
+  <span class="app-toolbar__spacer"></span>
+  <a mat-button routerLink="/tracked" routerLinkActive="app-toolbar__link--active">Seguimiento</a>
+  <a mat-button routerLink="/players" routerLinkActive="app-toolbar__link--active">Jugadores</a>
 </mat-toolbar>
 
 <main class="app-content">
