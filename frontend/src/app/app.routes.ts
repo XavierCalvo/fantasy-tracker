@@ -22,5 +22,9 @@ export const routes: Routes = [
     path: 'players/:id',
     loadComponent: () => import('./players/player-detail/player-detail').then((m) => m.PlayerDetail),
   },
+  {
+    path: 'teams',
+    loadComponent: () => import('./teams/team-maintenance/team-maintenance').then((m) => m.TeamMaintenance),
+  },
   { path: '**', redirectTo: 'tracked' },
 ];

@@ -6,11 +6,20 @@ import { map } from 'rxjs';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { PlayerApi } from '../../core/services/player-api';
+import { TeamApi } from '../../core/services/team-api';
 import { PlayerRequest } from '../../core/models/player';
+import { Team } from '../../core/models/team';
+import {
+  DEFAULT_PLAYER_POSITION,
+  PLAYER_POSITIONS,
+  PLAYER_POSITION_LABELS,
+  PlayerPosition,
+} from '../../core/models/player-position';
 import { StatusMessage } from '../../shared/status-message/status-message';
 
 @Component({
@@ -20,6 +29,7 @@ import { StatusMessage } from '../../shared/status-message/status-message';
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
     MatButtonModule,
     MatIconModule,
     MatSnackBarModule,
@@ -34,7 +44,13 @@ export class PlayerForm {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly playerApi = inject(PlayerApi);
+  private readonly teamApi = inject(TeamApi);
   private readonly snackBar = inject(MatSnackBar);
+
+  readonly positionOptions = PLAYER_POSITIONS;
+  readonly positionLabels = PLAYER_POSITION_LABELS;
+
+  readonly teams = signal<Team[]>([]);
 
   // Present on the "/players/:id/edit" route only; absent on "/players/new".
   private readonly playerId = toSignal(
@@ -49,8 +65,8 @@ export class PlayerForm {
   readonly saving = signal(false);
 
   readonly name = signal('');
-  readonly team = signal('');
-  readonly position = signal('');
+  readonly teamId = signal<number | null>(null);
+  readonly position = signal<PlayerPosition | null>(DEFAULT_PLAYER_POSITION);
   readonly externalId = signal('');
 
   readonly nameValid = computed(() => {
@@ -60,12 +76,14 @@ export class PlayerForm {
   readonly canSave = computed(() => this.nameValid() && !this.saving());
 
   constructor() {
+    this.teamApi.list().subscribe((teams) => this.teams.set(teams));
+
     effect(() => {
       const id = this.playerId();
       if (id === null) {
         this.name.set('');
-        this.team.set('');
-        this.position.set('');
+        this.teamId.set(null);
+        this.position.set(DEFAULT_PLAYER_POSITION);
         this.externalId.set('');
         this.error.set(false);
         return;
@@ -76,8 +94,8 @@ export class PlayerForm {
       this.playerApi.get(id).subscribe({
         next: (player) => {
           this.name.set(player.name);
-          this.team.set(player.team ?? '');
-          this.position.set(player.position ?? '');
+          this.teamId.set(player.teamId);
+          this.position.set(player.position);
           this.externalId.set(player.externalId ?? '');
           this.loading.set(false);
         },
@@ -96,8 +114,8 @@ export class PlayerForm {
 
     const request: PlayerRequest = {
       name: this.name().trim(),
-      team: this.team().trim(),
-      position: this.position().trim(),
+      teamId: this.teamId(),
+      position: this.position(),
       externalId: this.externalId().trim() || null,
     };
 

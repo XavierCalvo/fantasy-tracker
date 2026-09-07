@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { catchError, map, of, startWith } from 'rxjs';
 import { PlayerApi } from '../../core/services/player-api';
 import { Player } from '../../core/models/player';
+import { PLAYER_POSITION_LABELS } from '../../core/models/player-position';
 import { StatusMessage } from '../../shared/status-message/status-message';
 
 interface PlayerListState {
@@ -37,6 +38,8 @@ interface PlayerListState {
 export class PlayerList {
   private readonly playerApi = inject(PlayerApi);
 
+  readonly positionLabels = PLAYER_POSITION_LABELS;
+
   readonly search = signal('');
 
   private readonly state = toSignal(
@@ -60,8 +63,8 @@ export class PlayerList {
     return players.filter(
       (player) =>
         player.name.toLowerCase().includes(term) ||
-        player.team.toLowerCase().includes(term) ||
-        player.position.toLowerCase().includes(term),
+        (player.teamName ?? '').toLowerCase().includes(term) ||
+        (player.position ? this.positionLabels[player.position] : '').toLowerCase().includes(term),
     );
   };
 }

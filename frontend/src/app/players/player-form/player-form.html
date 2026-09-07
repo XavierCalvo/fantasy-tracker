@@ -26,12 +26,21 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Equipo</mat-label>
-        <input matInput type="text" maxlength="255" [ngModel]="team()" (ngModelChange)="team.set($event)" />
+        <mat-select [ngModel]="teamId()" (ngModelChange)="teamId.set($event)">
+          <mat-option [value]="null">Sin equipo</mat-option>
+          @for (team of teams(); track team.id) {
+            <mat-option [value]="team.id">{{ team.name }}</mat-option>
+          }
+        </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>Posición</mat-label>
-        <input matInput type="text" maxlength="50" [ngModel]="position()" (ngModelChange)="position.set($event)" />
+        <mat-select [ngModel]="position()" (ngModelChange)="position.set($event)">
+          @for (option of positionOptions; track option) {
+            <mat-option [value]="option">{{ positionLabels[option] }}</mat-option>
+          }
+        </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline">

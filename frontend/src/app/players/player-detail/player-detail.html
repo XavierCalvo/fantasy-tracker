@@ -14,7 +14,7 @@
   <mat-card class="player-detail__card">
     <mat-card-header>
       <mat-card-title>{{ player()!.name }}</mat-card-title>
-      <mat-card-subtitle>{{ player()!.team }} · {{ player()!.position }}</mat-card-subtitle>
+      <mat-card-subtitle>{{ player()!.teamName }} · {{ player()!.position ? positionLabels[player()!.position!] : '' }}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
       @if (latestPrice(); as price) {

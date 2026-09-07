@@ -11,8 +11,8 @@ describe('PlayerList', () => {
   let httpMock: HttpTestingController;
 
   const players: Player[] = [
-    { id: 1, name: 'Alpha Striker', team: 'FC Alpha', position: 'DEL', externalId: null, createdAt: '2024-01-01T00:00:00Z' },
-    { id: 2, name: 'Beta Defender', team: 'FC Beta', position: 'DEF', externalId: null, createdAt: '2024-01-01T00:00:00Z' },
+    { id: 1, name: 'Alpha Striker', teamId: 1, teamName: 'FC Alpha', position: 'DELANTERO', externalId: null, createdAt: '2024-01-01T00:00:00Z' },
+    { id: 2, name: 'Beta Defender', teamId: 2, teamName: 'FC Beta', position: 'DEFENSA', externalId: null, createdAt: '2024-01-01T00:00:00Z' },
   ];
 
   beforeEach(async () => {

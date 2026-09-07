@@ -3,6 +3,15 @@
   <span class="app-toolbar__spacer"></span>
   <a mat-button routerLink="/tracked" routerLinkActive="app-toolbar__link--active">Seguimiento</a>
   <a mat-button routerLink="/players" routerLinkActive="app-toolbar__link--active">Jugadores</a>
+  <a
+    mat-icon-button
+    routerLink="/teams"
+    routerLinkActive="app-toolbar__link--active"
+    matTooltip="Mantenimiento de equipos"
+    class="app-toolbar__teams-link"
+  >
+    <mat-icon>shield</mat-icon>
+  </a>
 </mat-toolbar>
 
 <main class="app-content">

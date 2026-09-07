@@ -16,6 +16,7 @@ import {
   TrackedPlayerListItem,
   TrackedPlayerStatus,
 } from '../core/models/tracked-player';
+import { PLAYER_POSITION_LABELS } from '../core/models/player-position';
 import { StatusMessage } from '../shared/status-message/status-message';
 
 interface TrackedPlayersState {
@@ -50,6 +51,7 @@ export class TrackedPlayers {
   private readonly trackedPlayerApi = inject(TrackedPlayerApi);
 
   readonly statusLabels = TRACKED_PLAYER_STATUS_LABELS;
+  readonly positionLabels = PLAYER_POSITION_LABELS;
   readonly statusOptions: TrackedPlayerStatus[] = ['WATCHING', 'OWNED', 'DISCARDED'];
 
   readonly statusFilter = signal<StatusFilter>('ALL');

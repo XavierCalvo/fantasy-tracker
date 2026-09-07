@@ -26,6 +26,7 @@ import {
   TrackedPlayerRequest,
   TrackedPlayerStatus,
 } from '../../core/models/tracked-player';
+import { PLAYER_POSITION_LABELS } from '../../core/models/player-position';
 import { StatusMessage } from '../../shared/status-message/status-message';
 
 @Component({
@@ -61,6 +62,7 @@ export class PlayerDetail {
   readonly statusOptions: TrackedPlayerStatus[] = ['WATCHING', 'OWNED', 'DISCARDED'];
   readonly statusLabels = TRACKED_PLAYER_STATUS_LABELS;
   readonly trendLabels = PLAYER_PRICE_TREND_LABELS;
+  readonly positionLabels = PLAYER_POSITION_LABELS;
 
   private readonly playerId = toSignal(
     this.route.paramMap.pipe(map((params) => Number(params.get('id')))),

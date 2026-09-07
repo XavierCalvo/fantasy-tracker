@@ -141,8 +141,12 @@ The backend must expose enough functionality for the frontend to perform the com
 | FT-065 | 🟢 DONE   | P1       | Store player notes          |
 | FT-066 | 🟢 DONE   | P1       | Create tracked-player view  |
 | FT-067 | 🟢 DONE   | P1       | Add `GET /api/tracking` backend endpoint (list all tracked players enriched with player name/team/position, used by the watchlist screen) |
-| FT-068 | ⚪ BACKLOG | P1       | Turn `Player.position` into a fixed `PlayerPosition` enum (`PORTERO`, `DEFENSA`, `MEDIO`, `DELANTERO`, `ENTRENADOR`) instead of free text; edit `V1__init.sql` directly (no migration needed, table is still empty); update `PlayerRequest`/`PlayerResponse` accordingly |
-| FT-069 | ⚪ BACKLOG | P1       | Replace the free-text position input in `PlayerForm` with a `mat-select` offering the fixed options in order (Portero, Defensa, Medio, Delantero, Entrenador), defaulting to Defensa when creating a new player |
+| FT-068 | 🟢 DONE   | P1       | Turn `Player.position` into a fixed `PlayerPosition` enum (`PORTERO`, `DEFENSA`, `MEDIO`, `DELANTERO`, `ENTRENADOR`) instead of free text; edit `V1__init.sql` directly (no migration needed, table is still empty); update `PlayerRequest`/`PlayerResponse` accordingly |
+| FT-069 | 🟢 DONE   | P1       | Replace the free-text position input in `PlayerForm` with a `mat-select` offering the fixed options in order (Portero, Defensa, Medio, Delantero, Entrenador), defaulting to Defensa when creating a new player |
+| FT-070 | 🟢 DONE   | P2       | Create minimal `Team` entity (id, name only) + repository; edit `V1__init.sql` directly (no migration needed, table is still empty); change `Player.team` from free text to a `teamId` reference and update `PlayerRequest`/`PlayerResponse` accordingly |
+| FT-071 | 🟢 DONE   | P2       | Create minimal `Team` REST API (list/get/create/update — no delete needed yet) |
+| FT-072 | 🟢 DONE   | P2       | Create a minimal Team maintenance screen (list + create/edit form) in the frontend; place its nav entry low-visibility since it is only expected to be used once per season (e.g. new season's teams) |
+| FT-073 | 🟢 DONE   | P2       | Replace the free-text team input in `PlayerForm` with a `mat-select` loading teams from the Team API (no on-the-fly team creation; teams must already exist from the maintenance screen) |
 
 ### Phase 2 acceptance criteria
 
@@ -150,21 +154,23 @@ A complete player can be viewed and managed from a mobile browser, including mar
 
 All acceptance criteria are met for the core flow: `PlayerApi`/`PlayerPriceApi`/`TrackedPlayerApi` cover the REST contract, `PlayerList`/`PlayerDetail` render players, price history and a tracking form (status, clause, clause release date, notes), and a shared `StatusMessage` component provides consistent loading/error/empty states. Unit tests (Vitest) cover all services and components. FT-066 is implemented as a dedicated **watchlist screen** (`TrackedPlayers`, route `/tracked`) that lists every tracked player, filterable by status and sortable by clause release date, name or status; it is now the app's default landing route, since it is more actionable to the user than a bare player list. This required a small backend addition (FT-067: `GET /api/tracking`, returning tracked players joined with player name/team/position) since no endpoint previously existed to list tracked players across all players. FT-057/FT-058 add a shared `PlayerForm` component (create at `/players/new`, edit at `/players/:id/edit`) so players can be registered and corrected (team, position, Futbolfantasy external id) entirely from the UI — the backend `POST`/`PUT /api/players` endpoints already existed from Phase 1 but had no frontend view. Remaining polish items: richer mobile navigation and an end-to-end verification of the Docker Compose stack.
 
+FT-068/FT-069 replace the free-text `position` field with a fixed `PlayerPosition` enum (`PORTERO`, `DEFENSA`, `MEDIO`, `DELANTERO`, `ENTRENADOR`), edited directly into `V1__init.sql` since the table was still empty; the frontend now shows a `mat-select` in that order, defaulting to Defensa on creation. FT-070/FT-071/FT-072/FT-073 introduce a minimal `Team` catalog (id + name), replacing the free-text `team` field with a `teamId` reference (`PlayerResponse` now also exposes the denormalized `teamName` for display); a low-visibility "Mantenimiento de equipos" screen (route `/teams`, linked from a small toolbar icon) allows creating/renaming teams, and `PlayerForm` loads teams from `GET /api/teams` into a `mat-select` instead of free text (no on-the-fly team creation).
+
 ---
 
 # Phase 3 — Data Acquisition
 
 | ID     | Status    | Priority | Task                                 |
 | ------ | --------- | -------- | ------------------------------------ |
-| FT-070 | ⚪ BACKLOG | P0       | Define external player data contract |
-| FT-071 | ⚪ BACKLOG | P0       | Define external player ID mapping    |
-| FT-072 | ⚪ BACKLOG | P0       | Implement player synchronisation     |
-| FT-073 | ⚪ BACKLOG | P0       | Implement price synchronisation      |
-| FT-074 | ⚪ BACKLOG | P1       | Implement trend synchronisation      |
-| FT-075 | ⚪ BACKLOG | P1       | Validate imported data               |
-| FT-076 | ⚪ BACKLOG | P1       | Prevent duplicate price observations |
-| FT-077 | ⚪ BACKLOG | P1       | Isolate external-source integration  |
-| FT-078 | ⚪ BACKLOG | P1       | Implement scheduled acquisition      |
+| FT-074 | ⚪ BACKLOG | P0       | Define external player data contract |
+| FT-075 | ⚪ BACKLOG | P0       | Define external player ID mapping    |
+| FT-076 | ⚪ BACKLOG | P0       | Implement player synchronisation     |
+| FT-077 | ⚪ BACKLOG | P0       | Implement price synchronisation      |
+| FT-078 | ⚪ BACKLOG | P1       | Implement trend synchronisation      |
+| FT-079 | ⚪ BACKLOG | P1       | Validate imported data               |
+| FT-080 | ⚪ BACKLOG | P1       | Prevent duplicate price observations |
+| FT-081 | ⚪ BACKLOG | P1       | Isolate external-source integration  |
+| FT-082 | ⚪ BACKLOG | P1       | Implement scheduled acquisition      |
 
 Scraping should only be implemented after the external data contract and acquisition boundary are clearly defined.
 
@@ -174,17 +180,17 @@ Scraping should only be implemented after the external data contract and acquisi
 
 | ID     | Status    | Priority | Task                              |
 | ------ | --------- | -------- | --------------------------------- |
-| FT-080 | ⚪ BACKLOG | P1       | Calculate 24h price change        |
-| FT-081 | ⚪ BACKLOG | P1       | Calculate 3-day price change      |
-| FT-082 | ⚪ BACKLOG | P1       | Calculate 7-day price change      |
-| FT-083 | ⚪ BACKLOG | P1       | Calculate price velocity          |
-| FT-084 | ⚪ BACKLOG | P1       | Calculate price acceleration      |
-| FT-085 | ⚪ BACKLOG | P1       | Analyse trend evolution           |
-| FT-086 | ⚪ BACKLOG | P1       | Analyse clause/value relationship |
-| FT-087 | ⚪ BACKLOG | P1       | Create player valuation           |
-| FT-088 | ⚪ BACKLOG | P1       | Create opportunity ranking        |
-| FT-089 | ⚪ BACKLOG | P2       | Create watchlist prioritisation   |
-| FT-090 | ⚪ BACKLOG | P2       | Create squad recommendations      |
+| FT-084 | ⚪ BACKLOG | P1       | Calculate 24h price change        |
+| FT-085 | ⚪ BACKLOG | P1       | Calculate 3-day price change      |
+| FT-086 | ⚪ BACKLOG | P1       | Calculate 7-day price change      |
+| FT-087 | ⚪ BACKLOG | P1       | Calculate price velocity          |
+| FT-088 | ⚪ BACKLOG | P1       | Calculate price acceleration      |
+| FT-089 | ⚪ BACKLOG | P1       | Analyse trend evolution           |
+| FT-090 | ⚪ BACKLOG | P1       | Analyse clause/value relationship |
+| FT-091 | ⚪ BACKLOG | P1       | Create player valuation           |
+| FT-092 | ⚪ BACKLOG | P1       | Create opportunity ranking        |
+| FT-093 | ⚪ BACKLOG | P2       | Create watchlist prioritisation   |
+| FT-094 | ⚪ BACKLOG | P2       | Create squad recommendations      |
 
 ---
 
@@ -192,16 +198,16 @@ Scraping should only be implemented after the external data contract and acquisi
 
 | ID     | Status    | Priority | Task                             |
 | ------ | --------- | -------- | -------------------------------- |
-| FT-100 | ⚪ BACKLOG | P2       | Define AWS architecture          |
-| FT-101 | ⚪ BACKLOG | P2       | Create RDS PostgreSQL            |
-| FT-102 | ⚪ BACKLOG | P2       | Configure production Flyway      |
-| FT-103 | ⚪ BACKLOG | P2       | Deploy backend                   |
-| FT-104 | ⚪ BACKLOG | P2       | Configure API Gateway            |
-| FT-105 | ⚪ BACKLOG | P2       | Deploy frontend with Amplify     |
-| FT-106 | ⚪ BACKLOG | P2       | Configure EventBridge scheduling |
-| FT-107 | ⚪ BACKLOG | P2       | Configure production secrets     |
-| FT-108 | ⚪ BACKLOG | P2       | Configure monitoring/logging     |
-| FT-109 | ⚪ BACKLOG | P2       | Document deployment procedure    |
+| FT-104 | ⚪ BACKLOG | P2       | Define AWS architecture          |
+| FT-105 | ⚪ BACKLOG | P2       | Create RDS PostgreSQL            |
+| FT-106 | ⚪ BACKLOG | P2       | Configure production Flyway      |
+| FT-107 | ⚪ BACKLOG | P2       | Deploy backend                   |
+| FT-108 | ⚪ BACKLOG | P2       | Configure API Gateway            |
+| FT-109 | ⚪ BACKLOG | P2       | Deploy frontend with Amplify     |
+| FT-110 | ⚪ BACKLOG | P2       | Configure EventBridge scheduling |
+| FT-111 | ⚪ BACKLOG | P2       | Configure production secrets     |
+| FT-112 | ⚪ BACKLOG | P2       | Configure monitoring/logging     |
+| FT-113 | ⚪ BACKLOG | P2       | Document deployment procedure    |
 
 ---
 
@@ -209,15 +215,15 @@ Scraping should only be implemented after the external data contract and acquisi
 
 | ID     | Status    | Priority | Task                                          |
 | ------ | --------- | -------- | --------------------------------------------- |
-| FT-120 | ⚪ BACKLOG | P3       | Advanced player filtering                     |
-| FT-121 | ⚪ BACKLOG | P3       | Custom rankings                               |
-| FT-122 | ⚪ BACKLOG | P3       | Opportunity alerts                            |
-| FT-123 | ⚪ BACKLOG | P3       | Historical market analysis                    |
-| FT-124 | ⚪ BACKLOG | P3       | Squad simulation                              |
-| FT-125 | ⚪ BACKLOG | P3       | Advanced visualisations                       |
-| FT-126 | ⚪ BACKLOG | P3       | Performance optimisation                      |
-| FT-127 | ⚪ BACKLOG | P3       | Support additional fantasy competitions       |
-| FT-128 | ⚪ BACKLOG | P3       | Authentication/multi-user support if required |
+| FT-124 | ⚪ BACKLOG | P3       | Advanced player filtering                     |
+| FT-125 | ⚪ BACKLOG | P3       | Custom rankings                               |
+| FT-126 | ⚪ BACKLOG | P3       | Opportunity alerts                            |
+| FT-127 | ⚪ BACKLOG | P3       | Historical market analysis                    |
+| FT-128 | ⚪ BACKLOG | P3       | Squad simulation                              |
+| FT-129 | ⚪ BACKLOG | P3       | Advanced visualisations                       |
+| FT-130 | ⚪ BACKLOG | P3       | Performance optimisation                      |
+| FT-131 | ⚪ BACKLOG | P3       | Support additional fantasy competitions       |
+| FT-132 | ⚪ BACKLOG | P3       | Authentication/multi-user support if required |
 
 ---
 
@@ -228,7 +234,7 @@ The recommended execution order from the current state is:
 1. **FT-044 — Finish responsive/mobile layout polish**
 2. Verify the Docker Compose stack end-to-end (backend + frontend + db)
 3. Add frontend E2E tests for the core player/tracking journey
-4. **FT-070 — Define external player data contract** (Phase 3 kickoff, once Phase 2 is closed)
+4. **FT-074 — Define external player data contract** (Phase 3 kickoff, once Phase 2 is closed)
 
 Phase 2 (Frontend MVP) core functionality is implemented; remaining work is UX polish and end-to-end verification before moving to Phase 3 (Data Acquisition).
 

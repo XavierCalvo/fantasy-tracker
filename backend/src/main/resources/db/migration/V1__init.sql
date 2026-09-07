@@ -1,11 +1,24 @@
+CREATE TABLE team (
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  CONSTRAINT uk_team_name UNIQUE (name)
+);
+
 CREATE TABLE player (
   id BIGSERIAL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
-  team VARCHAR(255),
-  position VARCHAR(50),
+  team_id BIGINT REFERENCES team(id),
+  position VARCHAR(20),
   external_id VARCHAR(100),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-  CONSTRAINT uk_player_external_id UNIQUE (external_id)
+  CONSTRAINT uk_player_external_id UNIQUE (external_id),
+  CONSTRAINT ck_player_position CHECK (position IN (
+    'PORTERO',
+    'DEFENSA',
+    'MEDIO',
+    'DELANTERO',
+    'ENTRENADOR'
+  ))
 );
 
 CREATE TABLE player_price (
@@ -46,3 +59,4 @@ CREATE TABLE tracked_player (
 CREATE INDEX idx_player_price_player ON player_price(player_id);
 CREATE INDEX idx_tracked_player_player ON tracked_player(player_id);
 CREATE INDEX idx_tracked_player_status ON tracked_player(status);
+CREATE INDEX idx_player_team ON player(team_id);

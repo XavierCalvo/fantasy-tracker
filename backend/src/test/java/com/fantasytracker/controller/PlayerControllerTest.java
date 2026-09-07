@@ -1,7 +1,9 @@
 package com.fantasytracker.controller;
 
+import com.fantasytracker.model.Team;
 import com.fantasytracker.repository.PlayerPriceRepository;
 import com.fantasytracker.repository.PlayerRepository;
+import com.fantasytracker.repository.TeamRepository;
 import com.fantasytracker.repository.TrackedPlayerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,21 +33,29 @@ class PlayerControllerTest {
     @Autowired
     private TrackedPlayerRepository trackedPlayerRepository;
 
+    @Autowired
+    private TeamRepository teamRepository;
+
     @BeforeEach
     void cleanUp() {
         trackedPlayerRepository.deleteAll();
         playerPriceRepository.deleteAll();
         playerRepository.deleteAll();
+        teamRepository.deleteAll();
     }
 
     @Test
     void createsAndRetrievesPlayer() throws Exception {
+        Long teamId = teamRepository.save(new Team("Team A")).getId();
+
         mockMvc.perform(post("/api/players")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"Player One\",\"team\":\"Team A\",\"position\":\"MID\",\"externalId\":\"ext-1\"}"))
+                        .content("{\"name\":\"Player One\",\"teamId\":" + teamId + ",\"position\":\"MEDIO\",\"externalId\":\"ext-1\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNotEmpty())
-                .andExpect(jsonPath("$.name").value("Player One"));
+                .andExpect(jsonPath("$.name").value("Player One"))
+                .andExpect(jsonPath("$.teamName").value("Team A"))
+                .andExpect(jsonPath("$.position").value("MEDIO"));
 
         mockMvc.perform(get("/api/players"))
                 .andExpect(status().isOk())
@@ -71,15 +81,24 @@ class PlayerControllerTest {
     }
 
     @Test
+    void createRejectsUnknownTeamId() throws Exception {
+        mockMvc.perform(post("/api/players")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"Player One\",\"teamId\":999}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void updatesPlayer() throws Exception {
         Long id = createPlayer();
+        Long teamId = teamRepository.save(new Team("Team B")).getId();
 
         mockMvc.perform(put("/api/players/" + id)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"Updated Name\",\"team\":\"Team B\",\"position\":\"DEF\"}"))
+                        .content("{\"name\":\"Updated Name\",\"teamId\":" + teamId + ",\"position\":\"DEFENSA\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Updated Name"))
-                .andExpect(jsonPath("$.team").value("Team B"));
+                .andExpect(jsonPath("$.teamName").value("Team B"));
     }
 
     @Test

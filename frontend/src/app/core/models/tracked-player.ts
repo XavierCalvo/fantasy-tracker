@@ -1,3 +1,5 @@
+import { PlayerPosition } from './player-position';
+
 export type TrackedPlayerStatus = 'WATCHING' | 'OWNED' | 'DISCARDED';
 
 export const TRACKED_PLAYER_STATUS_LABELS: Record<TrackedPlayerStatus, string> = {
@@ -30,7 +32,7 @@ export interface TrackedPlayerListItem {
   playerId: number;
   playerName: string;
   playerTeam: string | null;
-  playerPosition: string | null;
+  playerPosition: PlayerPosition | null;
   status: TrackedPlayerStatus;
   clause: number | null;
   clauseReleaseDate: string | null;

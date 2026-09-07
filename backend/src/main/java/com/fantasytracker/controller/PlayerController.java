@@ -3,7 +3,9 @@ package com.fantasytracker.controller;
 import com.fantasytracker.dto.PlayerRequest;
 import com.fantasytracker.dto.PlayerResponse;
 import com.fantasytracker.model.Player;
+import com.fantasytracker.model.Team;
 import com.fantasytracker.repository.PlayerRepository;
+import com.fantasytracker.repository.TeamRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +18,12 @@ import java.util.NoSuchElementException;
 @RequestMapping("/api/players")
 public class PlayerController {
     private final PlayerRepository playerRepository;
+    private final TeamRepository teamRepository;
 
-    public PlayerController(PlayerRepository playerRepository) { this.playerRepository = playerRepository; }
+    public PlayerController(PlayerRepository playerRepository, TeamRepository teamRepository) {
+        this.playerRepository = playerRepository;
+        this.teamRepository = teamRepository;
+    }
 
     @GetMapping
     public List<PlayerResponse> list() {
@@ -32,7 +38,8 @@ public class PlayerController {
 
     @PostMapping
     public ResponseEntity<PlayerResponse> create(@Valid @RequestBody PlayerRequest request) {
-        Player player = new Player(request.name(), request.team(), request.position(), request.externalId());
+        Team team = resolveTeam(request.teamId());
+        Player player = new Player(request.name(), team, request.position(), request.externalId());
         Player saved = playerRepository.save(player);
         return ResponseEntity.status(HttpStatus.CREATED).body(PlayerResponse.from(saved));
     }
@@ -42,7 +49,7 @@ public class PlayerController {
         Player existing = playerRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Player " + id + " not found"));
         existing.setName(request.name());
-        existing.setTeam(request.team());
+        existing.setTeam(resolveTeam(request.teamId()));
         existing.setPosition(request.position());
         existing.setExternalId(request.externalId());
         return PlayerResponse.from(playerRepository.save(existing));
@@ -55,5 +62,13 @@ public class PlayerController {
         }
         playerRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private Team resolveTeam(Long teamId) {
+        if (teamId == null) {
+            return null;
+        }
+        return teamRepository.findById(teamId)
+                .orElseThrow(() -> new NoSuchElementException("Team " + teamId + " not found"));
     }
 }

@@ -46,7 +46,7 @@
       <a mat-list-item [routerLink]="['/players', item.playerId]" class="tracked-players__item">
         <span matListItemTitle>{{ item.playerName }}</span>
         <span matListItemLine>
-          {{ item.playerTeam }} · {{ item.playerPosition }}
+          {{ item.playerTeam }} · {{ item.playerPosition ? positionLabels[item.playerPosition] : '' }}
           @if (item.clauseReleaseDate) {
             · Cláusula libre: {{ item.clauseReleaseDate | date: 'dd/MM/yyyy' }}
           }

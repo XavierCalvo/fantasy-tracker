@@ -11,8 +11,9 @@ describe('PlayerApi', () => {
   const player: Player = {
     id: 1,
     name: 'Test Player',
-    team: 'Test FC',
-    position: 'DEL',
+    teamId: 3,
+    teamName: 'Test FC',
+    position: 'DELANTERO',
     externalId: null,
     createdAt: '2024-01-01T00:00:00Z',
   };
@@ -54,7 +55,7 @@ describe('PlayerApi', () => {
   });
 
   it('should create a player', () => {
-    service.create({ name: 'Test Player', team: 'Test FC', position: 'DEL' }).subscribe((result) => {
+    service.create({ name: 'Test Player', teamId: 3, position: 'DELANTERO' }).subscribe((result) => {
       expect(result).toEqual(player);
     });
 

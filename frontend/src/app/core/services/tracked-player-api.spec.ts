@@ -23,7 +23,7 @@ describe('TrackedPlayerApi', () => {
     ...tracking,
     playerName: 'Test Player',
     playerTeam: 'Test Team',
-    playerPosition: 'FWD',
+    playerPosition: 'DELANTERO',
   };
 
   beforeEach(() => {

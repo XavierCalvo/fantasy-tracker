@@ -34,7 +34,7 @@
     @for (player of filteredPlayers(); track player.id) {
       <a mat-list-item [routerLink]="['/players', player.id]">
         <span matListItemTitle>{{ player.name }}</span>
-        <span matListItemLine>{{ player.team }} · {{ player.position }}</span>
+        <span matListItemLine>{{ player.teamName }} · {{ player.position ? positionLabels[player.position] : '' }}</span>
       </a>
     }
   </mat-nav-list>

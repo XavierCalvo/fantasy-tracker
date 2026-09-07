@@ -1,5 +1,7 @@
 package com.fantasytracker.dto;
 
+import com.fantasytracker.model.PlayerPosition;
+import com.fantasytracker.model.Team;
 import com.fantasytracker.model.TrackedPlayer;
 import com.fantasytracker.model.TrackedPlayerStatus;
 
@@ -17,7 +19,7 @@ public record TrackedPlayerListItemResponse(
         Long playerId,
         String playerName,
         String playerTeam,
-        String playerPosition,
+        PlayerPosition playerPosition,
         TrackedPlayerStatus status,
         BigDecimal clause,
         LocalDate clauseReleaseDate,
@@ -26,11 +28,12 @@ public record TrackedPlayerListItemResponse(
         ZonedDateTime updatedAt
 ) {
     public static TrackedPlayerListItemResponse from(TrackedPlayer trackedPlayer) {
+        Team team = trackedPlayer.getPlayer().getTeam();
         return new TrackedPlayerListItemResponse(
                 trackedPlayer.getId(),
                 trackedPlayer.getPlayer().getId(),
                 trackedPlayer.getPlayer().getName(),
-                trackedPlayer.getPlayer().getTeam(),
+                team != null ? team.getName() : null,
                 trackedPlayer.getPlayer().getPosition(),
                 trackedPlayer.getStatus(),
                 trackedPlayer.getClause(),

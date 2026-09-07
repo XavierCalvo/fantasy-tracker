@@ -6,6 +6,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
 import { PlayerForm } from './player-form';
 import { Player } from '../../core/models/player';
+import { Team } from '../../core/models/team';
 
 describe('PlayerForm', () => {
   let component: PlayerForm;
@@ -15,11 +16,17 @@ describe('PlayerForm', () => {
   const player: Player = {
     id: 1,
     name: 'Alpha Striker',
-    team: 'FC Alpha',
-    position: 'DEL',
+    teamId: 1,
+    teamName: 'FC Alpha',
+    position: 'DELANTERO',
     externalId: 'ff-123',
     createdAt: '2024-01-01T00:00:00Z',
   };
+
+  const teams: Team[] = [
+    { id: 1, name: 'FC Alpha' },
+    { id: 2, name: 'FC Test' },
+  ];
 
   async function setup(paramMap: Record<string, string>) {
     await TestBed.configureTestingModule({
@@ -38,6 +45,7 @@ describe('PlayerForm', () => {
     fixture = TestBed.createComponent(PlayerForm);
     component = fixture.componentInstance;
     httpMock = TestBed.inject(HttpTestingController);
+    httpMock.expectOne('/api/teams').flush(teams);
   }
 
   it('should start empty in create mode', async () => {
@@ -46,6 +54,7 @@ describe('PlayerForm', () => {
 
     expect(component.isEditMode()).toBe(false);
     expect(component.name()).toBe('');
+    expect(component.position()).toBe('DEFENSA');
     expect(component.canSave()).toBe(false);
   });
 
@@ -54,8 +63,8 @@ describe('PlayerForm', () => {
     fixture.detectChanges();
 
     component.name.set('New Player');
-    component.team.set('FC Test');
-    component.position.set('POR');
+    component.teamId.set(2);
+    component.position.set('PORTERO');
     expect(component.canSave()).toBe(true);
 
     component.save();
@@ -64,8 +73,8 @@ describe('PlayerForm', () => {
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({
       name: 'New Player',
-      team: 'FC Test',
-      position: 'POR',
+      teamId: 2,
+      position: 'PORTERO',
       externalId: null,
     });
     req.flush({ ...player, id: 2, name: 'New Player' });
@@ -81,7 +90,7 @@ describe('PlayerForm', () => {
 
     expect(component.isEditMode()).toBe(true);
     expect(component.name()).toBe('Alpha Striker');
-    expect(component.team()).toBe('FC Alpha');
+    expect(component.teamId()).toBe(1);
     expect(component.externalId()).toBe('ff-123');
   });
 
@@ -92,13 +101,13 @@ describe('PlayerForm', () => {
     httpMock.expectOne('/api/players/1').flush(player);
     await fixture.whenStable();
 
-    component.position.set('MED');
+    component.position.set('MEDIO');
     component.save();
 
     const req = httpMock.expectOne('/api/players/1');
     expect(req.request.method).toBe('PUT');
-    expect(req.request.body.position).toBe('MED');
-    req.flush({ ...player, position: 'MED' });
+    expect(req.request.body.position).toBe('MEDIO');
+    req.flush({ ...player, position: 'MEDIO' });
   });
 
   it('should navigate to the player detail page after saving', async () => {

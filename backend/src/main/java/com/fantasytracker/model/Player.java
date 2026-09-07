@@ -16,11 +16,13 @@ public class Player {
     @Column(nullable = false, length = 255)
     private String name;
 
-    @Column(length = 255)
-    private String team;
+    @ManyToOne
+    @JoinColumn(name = "team_id")
+    private Team team;
 
-    @Column(length = 50)
-    private String position;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private PlayerPosition position;
 
     @Column(name = "external_id", length = 100, unique = true)
     private String externalId;
@@ -36,13 +38,13 @@ public class Player {
         this.name = name;
     }
 
-    public Player(String name, String team, String position) {
+    public Player(String name, Team team, PlayerPosition position) {
         this.name = name;
         this.team = team;
         this.position = position;
     }
 
-    public Player(String name, String team, String position, String externalId) {
+    public Player(String name, Team team, PlayerPosition position, String externalId) {
         this.name = name;
         this.team = team;
         this.position = position;
@@ -69,19 +71,19 @@ public class Player {
         this.name = name;
     }
 
-    public String getTeam() {
+    public Team getTeam() {
         return team;
     }
 
-    public void setTeam(String team) {
+    public void setTeam(Team team) {
         this.team = team;
     }
 
-    public String getPosition() {
+    public PlayerPosition getPosition() {
         return position;
     }
 
-    public void setPosition(String position) {
+    public void setPosition(PlayerPosition position) {
         this.position = position;
     }
 

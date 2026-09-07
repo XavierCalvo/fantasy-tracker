@@ -17,8 +17,9 @@ describe('PlayerDetail', () => {
   const player: Player = {
     id: 1,
     name: 'Alpha Striker',
-    team: 'FC Alpha',
-    position: 'DEL',
+    teamId: 1,
+    teamName: 'FC Alpha',
+    position: 'DELANTERO',
     externalId: null,
     createdAt: '2024-01-01T00:00:00Z',
   };

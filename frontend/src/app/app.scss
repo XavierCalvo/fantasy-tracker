@@ -30,6 +30,10 @@
   text-underline-offset: 4px;
 }
 
+.app-toolbar__teams-link {
+  opacity: 0.6;
+}
+
 @media (max-width: 400px) {
   .app-toolbar {
     padding: 0 8px;
