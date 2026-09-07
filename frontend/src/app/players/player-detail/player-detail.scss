@@ -31,6 +31,19 @@
   color: rgba(0, 0, 0, 0.6);
 }
 
+.player-detail__trend-amount {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.player-detail__trend-amount--up {
+  color: #2e7d32;
+}
+
+.player-detail__trend-amount--down {
+  color: #c62828;
+}
+
 .player-detail__tracking-form {
   display: flex;
   flex-direction: column;

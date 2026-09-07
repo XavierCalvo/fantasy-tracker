@@ -20,6 +20,15 @@
       @if (latestPrice(); as price) {
         <p class="player-detail__price">
           {{ price.price | number: '1.0-0' }} €
+          @if (price.trendAmount !== null) {
+            <span
+              class="player-detail__trend-amount"
+              [class.player-detail__trend-amount--up]="price.trendAmount > 0"
+              [class.player-detail__trend-amount--down]="price.trendAmount < 0"
+            >
+              {{ price.trendAmount > 0 ? '+' : '' }}{{ price.trendAmount | number: '1.0-0' }} €
+            </span>
+          }
           @if (price.trendType) {
             <span class="player-detail__trend">{{ trendLabels[price.trendType] }}</span>
           }
@@ -57,8 +66,24 @@
         <mat-list>
           @for (price of prices(); track price.id) {
             <mat-list-item>
-              <span matListItemTitle>{{ price.price | number: '1.0-0' }} €</span>
-              <span matListItemLine>{{ price.capturedAt | date: 'short' }}</span>
+              <span matListItemTitle>
+                {{ price.price | number: '1.0-0' }} €
+                @if (price.trendAmount !== null) {
+                  <span
+                    class="player-detail__trend-amount"
+                    [class.player-detail__trend-amount--up]="price.trendAmount > 0"
+                    [class.player-detail__trend-amount--down]="price.trendAmount < 0"
+                  >
+                    {{ price.trendAmount > 0 ? '+' : '' }}{{ price.trendAmount | number: '1.0-0' }} €
+                  </span>
+                }
+              </span>
+              <span matListItemLine>
+                {{ price.capturedAt | date: 'short' }}
+                @if (price.trendType) {
+                  · {{ trendLabels[price.trendType] }}
+                }
+              </span>
             </mat-list-item>
           }
         </mat-list>
