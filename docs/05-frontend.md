@@ -540,8 +540,12 @@ Authentication is not part of the initial MVP, but this must be reconsidered bef
 | E2E tests                | ⚪ BACKLOG |
 | Accessibility            | ⚪ BACKLOG |
 | Analytics UI             | ⚪ BACKLOG |
+| Create player + tracking in one step | ⚪ BACKLOG |
+| Position as fixed dropdown (Portero/Defensa/Medio/Delantero/Entrenador) | ⚪ BACKLOG |
 
 Phase 2 core functionality is implemented: the Angular workspace (standalone components, Vitest, Angular Material, PWA/service worker, dev-server proxy, Docker/nginx deployment), the `PlayerApi`/`PlayerPriceApi`/`TrackedPlayerApi` services, the player list/detail screens, a shared `PlayerForm` for creating and editing players (`/players/new`, `/players/:id/edit`), price history and the tracking form (status, clause, clause release date, notes) all exist and are covered by unit tests. A dedicated **watchlist screen** (`TrackedPlayers`, route `/tracked`) lists every tracked player enriched with player name/team/position, filterable by status and sortable by clause release date, name or status; it is the app's default landing route. Remaining work: finish responsive/mobile layout polish, add E2E tests and accessibility review.
+
+**Pending task — Create player + tracking in one step:** Currently creating a new player and adding it to tracking are two separate steps (create via `PlayerForm`, then edit to add tracking). Add an optional "Add to tracking" checkbox to `PlayerForm` when creating a new player; if checked, show the tracking fields (status, clause, clause release date, notes) inline and, on submit, create the `Player` followed by the `TrackedPlayer` (two API calls from the frontend, transparent to the user). Keep the checkbox unchecked by default so a plain player-only creation remains a single click.
 
 ---
 

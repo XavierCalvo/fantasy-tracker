@@ -35,4 +35,14 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+@media (max-width: 400px) {
+  .player-detail__price {
+    font-size: 1.25rem;
+  }
 }

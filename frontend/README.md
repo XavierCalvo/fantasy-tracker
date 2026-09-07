@@ -46,13 +46,16 @@ ng test
 
 ## Running end-to-end tests
 
-For end-to-end (e2e) testing, run:
+End-to-end (E2E) smoke tests use [Playwright](https://playwright.dev/). They run against a real
+Chromium browser while mocking the backend `/api/**` calls (see `e2e/mocks.ts`), so they don't
+require the Spring Boot backend or a PostgreSQL database. Run them with:
 
 ```bash
-ng e2e
+npm run e2e
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+This starts an `ng serve` instance on port 4300 automatically (see `playwright.config.ts`) and runs
+every spec under `e2e/`.
 
 ## Additional Resources
 

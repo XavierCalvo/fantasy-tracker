@@ -141,6 +141,8 @@ The backend must expose enough functionality for the frontend to perform the com
 | FT-065 | 🟢 DONE   | P1       | Store player notes          |
 | FT-066 | 🟢 DONE   | P1       | Create tracked-player view  |
 | FT-067 | 🟢 DONE   | P1       | Add `GET /api/tracking` backend endpoint (list all tracked players enriched with player name/team/position, used by the watchlist screen) |
+| FT-068 | ⚪ BACKLOG | P1       | Turn `Player.position` into a fixed `PlayerPosition` enum (`PORTERO`, `DEFENSA`, `MEDIO`, `DELANTERO`, `ENTRENADOR`) instead of free text; edit `V1__init.sql` directly (no migration needed, table is still empty); update `PlayerRequest`/`PlayerResponse` accordingly |
+| FT-069 | ⚪ BACKLOG | P1       | Replace the free-text position input in `PlayerForm` with a `mat-select` offering the fixed options in order (Portero, Defensa, Medio, Delantero, Entrenador), defaulting to Defensa when creating a new player |
 
 ### Phase 2 acceptance criteria
 

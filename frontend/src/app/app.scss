@@ -15,15 +15,35 @@
   text-decoration: none;
   font-size: 1.1rem;
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .app-toolbar__spacer {
   flex: 1 1 auto;
+  min-width: 0.5rem;
 }
 
 .app-toolbar__link--active {
   text-decoration: underline;
   text-underline-offset: 4px;
+}
+
+@media (max-width: 400px) {
+  .app-toolbar {
+    padding: 0 8px;
+  }
+
+  .app-toolbar__title {
+    font-size: 0.95rem;
+  }
+
+  .app-toolbar ::ng-deep .mat-mdc-button {
+    padding: 0 8px;
+    min-width: 0;
+    font-size: 0.85rem;
+  }
 }
 
 .app-content {
