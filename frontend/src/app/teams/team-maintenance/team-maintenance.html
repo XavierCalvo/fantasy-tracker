@@ -1,0 +1,78 @@
+<a routerLink="/tracked" class="team-maintenance__back">
+  <mat-icon>arrow_back</mat-icon>
+  Volver
+</a>
+
+<mat-card class="team-maintenance__card">
+  <mat-card-header>
+    <mat-card-title>Mantenimiento de equipos</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <p class="team-maintenance__hint">
+      Alta y edición de equipos (solo id y nombre). Suele actualizarse una vez por temporada.
+    </p>
+
+    <div class="team-maintenance__new">
+      <mat-form-field appearance="outline">
+        <mat-label>Nuevo equipo</mat-label>
+        <input
+          matInput
+          type="text"
+          maxlength="255"
+          [ngModel]="newTeamName()"
+          (ngModelChange)="newTeamName.set($event)"
+        />
+      </mat-form-field>
+      <button mat-flat-button color="primary" [disabled]="!canCreate()" (click)="createTeam()">
+        <mat-icon>add</mat-icon>
+        Añadir
+      </button>
+    </div>
+
+    @if (loading()) {
+      <app-status-message mode="loading" message="Cargando equipos..."></app-status-message>
+    } @else if (error()) {
+      <app-status-message
+        mode="error"
+        message="No se ha podido conectar con el backend. Inténtalo de nuevo más tarde."
+      ></app-status-message>
+    } @else if (teams().length === 0) {
+      <app-status-message mode="empty" message="Todavía no hay equipos creados."></app-status-message>
+    } @else {
+      <mat-list>
+        @for (team of teams(); track team.id) {
+          <mat-list-item>
+            @if (editingId() === team.id) {
+              <div class="team-maintenance__edit-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Nombre</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    maxlength="255"
+                    [ngModel]="editingName()"
+                    (ngModelChange)="editingName.set($event)"
+                  />
+                </mat-form-field>
+                <button mat-icon-button color="primary" [disabled]="saving()" (click)="saveEdit()">
+                  <mat-icon>check</mat-icon>
+                </button>
+                <button mat-icon-button [disabled]="saving()" (click)="cancelEdit()">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            }
+            @if (editingId() !== team.id) {
+              <span matListItemTitle>{{ team.name }}</span>
+            }
+            @if (editingId() !== team.id) {
+              <button matListItemMeta mat-icon-button (click)="startEdit(team)">
+                <mat-icon>edit</mat-icon>
+              </button>
+            }
+          </mat-list-item>
+        }
+      </mat-list>
+    }
+  </mat-card-content>
+</mat-card>

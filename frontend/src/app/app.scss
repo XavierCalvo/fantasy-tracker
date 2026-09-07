@@ -1,0 +1,71 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #fafafa;
+}
+
+.app-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.app-toolbar__title {
+  color: inherit;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-toolbar__spacer {
+  flex: 1 1 auto;
+  min-width: 0.5rem;
+}
+
+.app-toolbar__link--active {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.app-toolbar__teams-link {
+  opacity: 0.6;
+}
+
+@media (max-width: 400px) {
+  .app-toolbar {
+    padding: 0 8px;
+  }
+
+  .app-toolbar__title {
+    font-size: 0.95rem;
+  }
+
+  .app-toolbar ::ng-deep .mat-mdc-button {
+    padding: 0 8px;
+    min-width: 0;
+    font-size: 0.85rem;
+  }
+}
+
+.app-content {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0.75rem;
+  box-sizing: border-box;
+}
+
+@media (min-width: 600px) {
+  .app-content {
+    padding: 1.25rem;
+  }
+}
+
+@media (min-width: 960px) {
+  .app-content {
+    max-width: 960px;
+    padding: 1.5rem 2rem;
+  }
+}

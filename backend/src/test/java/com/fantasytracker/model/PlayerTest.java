@@ -16,11 +16,12 @@ class PlayerTest {
 
     @Test
     void constructorStoresBasicFields() {
-        Player player = new Player("Player", "Team", "MID", "ext-1");
+        Team team = new Team("Team");
+        Player player = new Player("Player", team, PlayerPosition.MEDIO, "ext-1");
 
         assertEquals("Player", player.getName());
-        assertEquals("Team", player.getTeam());
-        assertEquals("MID", player.getPosition());
+        assertEquals(team, player.getTeam());
+        assertEquals(PlayerPosition.MEDIO, player.getPosition());
         assertEquals("ext-1", player.getExternalId());
     }
 }

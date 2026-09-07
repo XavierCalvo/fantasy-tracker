@@ -1,0 +1,69 @@
+.player-detail__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: inherit;
+  text-decoration: none;
+  margin-bottom: 0.75rem;
+}
+
+.player-detail__card {
+  margin-bottom: 1rem;
+}
+
+.player-detail__price {
+  font-size: 1.5rem;
+  font-weight: 600;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.player-detail__price--empty {
+  font-size: 1rem;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.player-detail__trend {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.player-detail__trend-amount {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.player-detail__trend-amount--up {
+  color: #2e7d32;
+}
+
+.player-detail__trend-amount--down {
+  color: #c62828;
+}
+
+.player-detail__stale-icon {
+  font-size: 1.1rem;
+  height: 1.1rem;
+  width: 1.1rem;
+  color: #ef6c00;
+  align-self: center;
+}
+
+.player-detail__tracking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+@media (max-width: 400px) {
+  .player-detail__price {
+    font-size: 1.25rem;
+  }
+}

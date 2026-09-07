@@ -140,6 +140,44 @@ The exact development commands may evolve as the CI pipeline is completed.
 
 ---
 
+# 6bis. Running the Backend Directly on the Host (Outside Docker)
+
+Sometimes you need the backend process itself to reach the public internet directly from your
+machine — for example, to test the futbolfantasy.com price scraper (`acquisition` package) end to
+end, since outbound calls made from inside the Docker/Podman network take a different network path
+than calls made by a process running directly on Windows.
+
+Prerequisites: a PostgreSQL instance reachable on `localhost:5432` (the `docker compose up db` from
+this repo works fine — its `db` service already publishes port 5432 to the host).
+
+From the `backend` directory, either use the helper script:
+
+```powershell
+.\run-local.ps1                 # skips tests by default, for fast iteration
+.\run-local.ps1 -SkipTests:$false
+```
+
+or run the equivalent commands manually:
+
+```powershell
+$env:DB_URL = "jdbc:postgresql://localhost:5432/fantasy"
+mvn package -DskipTests spring-boot:run "-Dspring-boot.run.jvmArguments=-Djavax.net.ssl.trustStoreType=Windows-ROOT"
+```
+
+Notes:
+* `DB_URL` overrides the `db:5432` Docker service name (see `application.properties`) with
+  `localhost:5432` so the app can reach the host-exposed PostgreSQL port.
+* `-Djavax.net.ssl.trustStoreType=Windows-ROOT` makes the JVM trust the same root certificates as
+  Windows. This is required if your machine sits behind a TLS-inspecting corporate proxy or
+  antivirus — otherwise outbound HTTPS calls (e.g. the scraper) fail with
+  `SSLHandshakeException: PKIX path building failed`, even though the same request succeeds from
+  inside a Docker container (whose network egress isn't subject to that inspection).
+* Don't forget the two `-D` flags must be **separate** Maven arguments (each in its own quoted
+  string); putting `-Dspring-boot.run.jvmArguments=...` *inside* the value of
+  `-Dspring-boot.run.arguments=...` silently swallows it.
+
+---
+
 # 7. Database Development
 
 Database schema changes are managed through Flyway.

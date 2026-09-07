@@ -99,9 +99,9 @@ The container exposes port `8080`.
 
 # 6. Frontend Deployment
 
-During local development the Angular application will run independently from the backend.
+During local development the Angular application runs independently from the backend via `ng serve`, using a dev-server proxy (`proxy.conf.json`) so `/api` requests are forwarded to `http://localhost:8080` without CORS issues.
 
-The frontend communicates with the backend through HTTP.
+The frontend also has a multi-stage Docker build (`frontend/Dockerfile`): a Node build stage produces the production bundle, which is then served by nginx (`frontend/nginx.conf`). The nginx config proxies `/api/*` to the `backend` container on the Docker network and falls back to `index.html` for Angular's client-side routing. This container is wired into `docker-compose.yml` as the `frontend` service (port `4200` → `80`).
 
 For production, the target is to serve the Angular PWA through AWS Amplify Hosting or an equivalent static hosting solution.
 
@@ -291,8 +291,10 @@ The exact monitoring stack is TBD.
 | Backend Docker image   | 🟢 DONE           |
 | Flyway local execution | 🟢 DONE           |
 | Backend CI (build & test) | 🟢 DONE        |
-| Frontend CI            | ⚪ BACKLOG         |
-| Frontend deployment    | ⚪ BACKLOG         |
+| Frontend Docker image  | 🟢 DONE           |
+| Frontend CI            | 🟢 DONE           |
+| Frontend deployment (local, Docker/nginx) | 🟢 DONE |
+| Frontend deployment (AWS Amplify)         | ⚪ BACKLOG |
 | AWS architecture       | 🔵 TARGET DEFINED |
 | RDS                    | ⚪ BACKLOG         |
 | API Gateway            | ⚪ BACKLOG         |

@@ -1,0 +1,22 @@
+.player-form__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: inherit;
+  text-decoration: none;
+  margin-bottom: 0.75rem;
+}
+
+.player-form__card {
+  margin-bottom: 1rem;
+}
+
+.player-form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  mat-form-field {
+    width: 100%;
+  }
+}

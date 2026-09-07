@@ -1,0 +1,101 @@
+<div class="tracked-players__filters">
+  <mat-form-field appearance="outline" class="tracked-players__status-filter">
+    <mat-label>Estado</mat-label>
+    <mat-select [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)">
+      <mat-option value="ALL">Todos</mat-option>
+      @for (status of statusOptions; track status) {
+        <mat-option [value]="status">{{ statusLabels[status] }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="tracked-players__sort-field">
+    <mat-label>Ordenar por</mat-label>
+    <mat-select [ngModel]="sortField()" (ngModelChange)="sortField.set($event)">
+      <mat-option value="clauseReleaseDate">Fecha de cláusula</mat-option>
+      <mat-option value="playerName">Nombre</mat-option>
+      <mat-option value="status">Estado</mat-option>
+      <mat-option value="playerPosition">Posición</mat-option>
+      <mat-option value="latestTrendAmount">Subida/bajada</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <button
+    type="button"
+    mat-icon-button
+    (click)="toggleSortDirection()"
+    [attr.aria-label]="sortDirection() === 'asc' ? 'Orden ascendente' : 'Orden descendente'"
+  >
+    <mat-icon>{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+  </button>
+
+  <button
+    type="button"
+    mat-stroked-button
+    class="tracked-players__refresh-all"
+    [disabled]="refreshingAll()"
+    (click)="refreshAllPrices()"
+  >
+    <mat-icon>refresh</mat-icon>
+    @if (refreshingAll()) {
+      Actualizando...
+    } @else {
+      Actualizar todos
+    }
+  </button>
+</div>
+
+@if (loading()) {
+  <app-status-message mode="loading" message="Cargando jugadores en seguimiento..."></app-status-message>
+} @else if (error()) {
+  <app-status-message
+    mode="error"
+    message="No se ha podido conectar con el backend. Inténtalo de nuevo más tarde."
+  ></app-status-message>
+} @else if (filteredItems().length === 0) {
+  <app-status-message
+    mode="empty"
+    message="No hay jugadores en seguimiento con este filtro."
+  ></app-status-message>
+} @else {
+  <mat-nav-list>
+    @for (item of filteredItems(); track item.id) {
+      <a mat-list-item [routerLink]="['/players', item.playerId]" class="tracked-players__item">
+        <span matListItemTitle>{{ item.playerName }}</span>
+        <span matListItemLine>
+          {{ item.playerTeam }} · {{ item.playerPosition ? positionLabels[item.playerPosition] : '' }}
+          @if (item.clauseReleaseDate) {
+            · Cláusula libre: {{ item.clauseReleaseDate | date: 'dd/MM/yyyy' }}
+          }
+        </span>
+        @if (item.latestPrice !== null) {
+          <span matListItemLine class="tracked-players__price-line">
+            {{ item.latestPrice | number: '1.0-0' }} €
+            @if (item.latestTrendAmount !== null) {
+              <span
+                class="tracked-players__trend-amount"
+                [class.tracked-players__trend-amount--up]="item.latestTrendAmount > 0"
+                [class.tracked-players__trend-amount--down]="item.latestTrendAmount < 0"
+              >
+                {{ item.latestTrendAmount > 0 ? '+' : '' }}{{ item.latestTrendAmount | number: '1.0-0' }} €
+              </span>
+            }
+            @if (item.latestTrendType) {
+              · {{ trendLabels[item.latestTrendType] }}
+            }
+            @if (isPriceStale(item.latestPriceCapturedAt)) {
+              <mat-icon
+                class="tracked-players__stale-icon"
+                matTooltip="Precio desactualizado (más de 24h)"
+                aria-label="Precio desactualizado (más de 24h)"
+              >schedule</mat-icon>
+            }
+          </span>
+        }
+        <mat-chip-set matListItemMeta>
+          <mat-chip>{{ statusLabels[item.status] }}</mat-chip>
+        </mat-chip-set>
+      </a>
+    }
+  </mat-nav-list>
+}

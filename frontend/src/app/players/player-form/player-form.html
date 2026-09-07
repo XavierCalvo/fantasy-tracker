@@ -1,0 +1,67 @@
+<a routerLink="/players" class="player-form__back">
+  <mat-icon>arrow_back</mat-icon>
+  Volver a jugadores
+</a>
+
+@if (loading()) {
+  <app-status-message mode="loading" message="Cargando jugador..."></app-status-message>
+} @else if (error()) {
+  <app-status-message
+    mode="error"
+    message="No se ha podido cargar la información del jugador."
+  ></app-status-message>
+} @else {
+  <mat-card class="player-form__card">
+    <mat-card-header>
+      <mat-card-title>{{ isEditMode() ? 'Editar jugador' : 'Nuevo jugador' }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="player-form__fields">
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre</mat-label>
+        <input matInput type="text" required maxlength="255" [ngModel]="name()" (ngModelChange)="name.set($event)" />
+        @if (!nameValid()) {
+          <mat-error>El nombre es obligatorio (máx. 255 caracteres).</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Equipo</mat-label>
+        <mat-select [ngModel]="teamId()" (ngModelChange)="teamId.set($event)">
+          <mat-option [value]="null">Sin equipo</mat-option>
+          @for (team of teams(); track team.id) {
+            <mat-option [value]="team.id">{{ team.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Posición</mat-label>
+        <mat-select [ngModel]="position()" (ngModelChange)="position.set($event)">
+          @for (option of positionOptions; track option) {
+            <mat-option [value]="option">{{ positionLabels[option] }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>ID Futbolfantasy</mat-label>
+        <input
+          matInput
+          type="text"
+          maxlength="100"
+          [ngModel]="externalId()"
+          (ngModelChange)="externalId.set($event)"
+        />
+        <mat-hint>Identificador externo usado para relacionar el jugador con Futbolfantasy.</mat-hint>
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" [disabled]="!canSave()" (click)="save()">
+        @if (saving()) {
+          Guardando...
+        } @else {
+          Guardar jugador
+        }
+      </button>
+    </mat-card-content>
+  </mat-card>
+}
