@@ -1,5 +1,6 @@
 package com.fantasytracker.web;
 
+import com.fantasytracker.acquisition.PlayerMarketDataException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,6 +64,18 @@ public class GlobalExceptionHandler {
                 List.of()
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(PlayerMarketDataException.class)
+    public ResponseEntity<ApiError> handleMarketDataFailure(PlayerMarketDataException ex, HttpServletRequest request) {
+        ApiError error = new ApiError(
+                HttpStatus.BAD_GATEWAY.value(),
+                HttpStatus.BAD_GATEWAY.getReasonPhrase(),
+                ex.getMessage() != null ? ex.getMessage() : "Failed to fetch player market data",
+                request.getRequestURI(),
+                List.of()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(error);
     }
 
     @ExceptionHandler(Exception.class)

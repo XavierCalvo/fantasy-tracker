@@ -33,6 +33,16 @@
         <mat-icon>edit</mat-icon>
         Editar jugador
       </a>
+      @if (player()!.externalId) {
+        <button mat-button [disabled]="priceRefreshing()" (click)="refreshPrice()">
+          <mat-icon>refresh</mat-icon>
+          @if (priceRefreshing()) {
+            Actualizando...
+          } @else {
+            Actualizar
+          }
+        </button>
+      }
     </mat-card-actions>
   </mat-card>
 

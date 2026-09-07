@@ -18,4 +18,8 @@ export class PlayerPriceApi {
   create(playerId: number, request: PlayerPriceRequest): Observable<PlayerPrice> {
     return this.http.post<PlayerPrice>(this.baseUrl(playerId), request);
   }
+
+  refresh(playerId: number): Observable<PlayerPrice> {
+    return this.http.post<PlayerPrice>(`${this.baseUrl(playerId)}/refresh`, {});
+  }
 }

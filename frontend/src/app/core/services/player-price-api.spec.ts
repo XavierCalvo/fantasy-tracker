@@ -52,4 +52,14 @@ describe('PlayerPriceApi', () => {
     expect(req.request.method).toBe('POST');
     req.flush(price);
   });
+
+  it('should refresh the price from the external source', () => {
+    service.refresh(1).subscribe((result) => {
+      expect(result).toEqual(price);
+    });
+
+    const req = httpMock.expectOne('/api/players/1/prices/refresh');
+    expect(req.request.method).toBe('POST');
+    req.flush(price);
+  });
 });

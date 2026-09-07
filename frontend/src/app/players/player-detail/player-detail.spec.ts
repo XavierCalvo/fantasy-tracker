@@ -115,4 +115,31 @@ describe('PlayerDetail', () => {
 
     expect(component.tracking()).toEqual(tracking);
   });
+
+  it('should refresh the latest price when requested', async () => {
+    const playerWithExternalId: Player = { ...player, externalId: 'alvaro-valles' };
+    await setup();
+    fixture.detectChanges();
+
+    httpMock.expectOne('/api/players/1').flush(playerWithExternalId);
+    httpMock.expectOne('/api/players/1/prices').flush(prices);
+    httpMock.expectOne('/api/players/1/tracking').flush(tracking);
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    component.refreshPrice();
+    const refreshReq = httpMock.expectOne('/api/players/1/prices/refresh');
+    expect(refreshReq.request.method).toBe('POST');
+    const newPrice: PlayerPrice = {
+      id: 2,
+      playerId: 1,
+      price: 1050000,
+      trendAmount: 50000,
+      trendType: 'ACCELERATING_UP',
+      capturedAt: '2024-01-03T00:00:00Z',
+    };
+    refreshReq.flush(newPrice);
+
+    expect(component.prices()[0]).toEqual(newPrice);
+  });
 });

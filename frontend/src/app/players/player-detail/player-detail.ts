@@ -77,6 +77,7 @@ export class PlayerDetail {
 
   readonly tracking = signal<TrackedPlayer | null>(null);
   readonly trackingSaving = signal(false);
+  readonly priceRefreshing = signal(false);
 
   readonly editStatus = signal<TrackedPlayerStatus>('WATCHING');
   readonly editClause = signal<number | null>(null);
@@ -135,6 +136,30 @@ export class PlayerDetail {
         if (err.status === 404) {
           this.tracking.set(null);
         }
+      },
+    });
+  }
+
+  refreshPrice(): void {
+    const id = this.playerId();
+    if (Number.isNaN(id) || this.priceRefreshing()) {
+      return;
+    }
+
+    this.priceRefreshing.set(true);
+    this.playerPriceApi.refresh(id).subscribe({
+      next: (price) => {
+        this.prices.set([price, ...this.prices()]);
+        this.priceRefreshing.set(false);
+        this.snackBar.open('Precio actualizado', 'Cerrar', { duration: 3000 });
+      },
+      error: (err: HttpErrorResponse) => {
+        this.priceRefreshing.set(false);
+        const message =
+          err.status === 400
+            ? 'Este jugador no tiene identificador externo configurado.'
+            : 'No se pudo obtener el precio actual.';
+        this.snackBar.open(message, 'Cerrar', { duration: 3000 });
       },
     });
   }
